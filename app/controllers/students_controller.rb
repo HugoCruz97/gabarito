@@ -5,7 +5,7 @@ class StudentsController < ApplicationController
     @classrooms = Classroom.order(:name)
     @students = Student.includes(:classroom).order(:name)
     @students = @students.where(classroom_id: params[:classroom_id]) if params[:classroom_id].present?
-    @students = @students.where("students.name ILIKE ?", "%#{Student.sanitize_sql_like(params[:q])}%") if params[:q].present?
+    @students = @students.where("students.name ILIKE :t OR students.registration_number ILIKE :t", t: "%#{Student.sanitize_sql_like(params[:q])}%") if params[:q].present?
   end
 
   def show

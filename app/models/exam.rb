@@ -13,8 +13,11 @@ class Exam < ApplicationRecord
   validates :title, presence: true
   validates :options_count, inclusion: { in: 2..OPTIONS.size }
   validate :must_have_subjects
+  validate :at_most_one_foreign_language
 
   after_save :sync_questions!
+
+  LANGUAGES = { "ingles" => "Inglês", "espanhol" => "Espanhol" }.freeze
 
   def options
     OPTIONS.first(options_count)
@@ -28,11 +31,35 @@ class Exam < ApplicationRecord
     exam_subjects.sum(&:total_points)
   end
 
+  def foreign_language?
+    exam_subjects.any?(&:foreign_language?)
+  end
+
   def answer_key_complete?
-    questions.where(correct_option: nil, annulled: false).none?
+    answer_key_progress == 100
+  end
+
+  # Percentual do gabarito preenchido. Questões de língua estrangeira têm dois gabaritos
+  # (Inglês e Espanhol) e contam duas vezes; anuladas contam como preenchidas.
+  def answer_key_progress
+    foreign_ids = exam_subjects.select(&:foreign_language?).map(&:id)
+    slots = questions.flat_map do |q|
+      keys = [ [ q.correct_option, q.annulled? ] ]
+      keys << [ q.correct_option_es, q.annulled_es? ] if foreign_ids.include?(q.exam_subject_id)
+      keys.map { |key, annulled| key.present? || annulled }
+    end
+    return 0 if slots.empty?
+
+    (slots.count(true) * 100.0 / slots.size).round
   end
 
   private
+
+  def at_most_one_foreign_language
+    if exam_subjects.reject(&:marked_for_destruction?).count(&:foreign_language?) > 1
+      errors.add(:base, "Só uma matéria pode ser de língua estrangeira (Inglês/Espanhol)")
+    end
+  end
 
   def must_have_subjects
     if exam_subjects.reject(&:marked_for_destruction?).empty?

@@ -1,6 +1,6 @@
 <% content_for :title, "Nova matéria" %>
-<h1 class="mb-6 text-2xl font-bold">Nova matéria</h1>
-<%= form_with model: @subject, class: "flex max-w-lg gap-2" do |f| %>
-  <%= f.text_field :name, autofocus: true, class: ApplicationHelper::INPUT_CLASS %>
-  <%= f.submit "Salvar", class: ApplicationHelper::BUTTON_CLASS %>
+<%= page_header "Nova matéria", eyebrow: "Matérias" %>
+<%= form_with model: @subject, class: "card flex max-w-xl gap-2 p-2" do |f| %>
+  <%= f.text_field :name, autofocus: true, placeholder: "Nome da matéria", class: "input flex-1 !shadow-none !ring-0" %>
+  <%= f.button type: "submit", class: "btn btn-primary" do %><%= icon :check %> Salvar<% end %>
 <% end %>

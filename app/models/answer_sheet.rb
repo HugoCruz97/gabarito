@@ -12,13 +12,22 @@ class AnswerSheet < ApplicationRecord
     failed: "failed"          # não foi possível ler
   }, default: :pending
 
+  validates :language, inclusion: { in: Exam::LANGUAGES.keys }, allow_nil: true
+
   # Questão anulada: todos ganham o ponto.
   # Marcação múltipla ou em branco: zero.
+  # Língua estrangeira: corrige pelo gabarito (e anulação) da língua marcada no cartão
+  # (sem língua marcada não há como corrigir, então vale zero até a revisão).
   def points_for(question, answer)
-    return question.points_per_question if question.annulled?
+    return question.points_per_question if question.annulled_for?(language)
     return 0 if answer.nil? || answer.multiple_marks? || answer.marked_option.blank?
 
-    answer.marked_option == question.correct_option ? question.points_per_question : 0
+    expected = question.correct_option_for(language)
+    expected.present? && answer.marked_option == expected ? question.points_per_question : 0
+  end
+
+  def language_missing?
+    language.nil? && exam.foreign_language?
   end
 
   # { ExamSubject => pontos }

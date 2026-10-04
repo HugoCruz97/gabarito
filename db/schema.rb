@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_015735) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_030950) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -49,6 +49,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_015735) do
     t.decimal "score", precision: 7, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "language"
     t.index ["exam_id"], name: "index_answer_sheets_on_exam_id"
     t.index ["student_id"], name: "index_answer_sheets_on_student_id"
   end
@@ -78,6 +79,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_015735) do
     t.boolean "annulled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "correct_option_es", limit: 1
+    t.boolean "annulled_es", default: false, null: false
     t.index ["exam_id", "number"], name: "index_exam_questions_on_exam_id_and_number", unique: true
     t.index ["exam_id"], name: "index_exam_questions_on_exam_id"
     t.index ["exam_subject_id"], name: "index_exam_questions_on_exam_subject_id"
@@ -91,6 +94,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_015735) do
     t.decimal "points_per_question", precision: 6, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "foreign_language", default: false, null: false
     t.index ["exam_id"], name: "index_exam_subjects_on_exam_id"
     t.index ["subject_id"], name: "index_exam_subjects_on_subject_id"
   end

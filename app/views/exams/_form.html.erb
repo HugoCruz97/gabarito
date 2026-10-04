@@ -1,73 +1,114 @@
-<%= form_with model: exam, class: "space-y-6", data: { controller: "exam-form" } do |f| %>
-  <%= render "shared/errors", record: exam %>
+<%= form_with model: exam, class: "grid gap-6 lg:grid-cols-3", data: { controller: "exam-form", exam_form_colors_value: ApplicationHelper::SUBJECT_COLORS.to_json } do |f| %>
+  <div class="space-y-6 lg:col-span-2">
+    <%= render "shared/errors", record: exam %>
 
-  <section class="space-y-5 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-    <div class="grid gap-5 md:grid-cols-3">
-      <div class="md:col-span-2">
-        <%= f.label :title, class: ApplicationHelper::LABEL_CLASS %>
-        <%= f.text_field :title, placeholder: "Ex.: Simulado 1º bimestre", autofocus: true, class: ApplicationHelper::INPUT_CLASS %>
+    <section class="card space-y-5 p-6">
+      <h2 class="flex items-center gap-2 font-bold text-navy-900 dark:text-white">
+        <span class="flex size-7 items-center justify-center rounded-lg bg-navy-800 text-xs text-white dark:bg-green-500">1</span> Informações
+      </h2>
+      <div class="grid gap-5 sm:grid-cols-3">
+        <div class="sm:col-span-2">
+          <%= f.label :title, class: "label" %>
+          <%= f.text_field :title, placeholder: "Ex.: Simulado 1º bimestre", autofocus: true, class: "input" %>
+        </div>
+        <div>
+          <%= f.label :applied_on, class: "label" %>
+          <%= f.date_field :applied_on, class: "input" %>
+        </div>
       </div>
+
       <div>
-        <%= f.label :applied_on, class: ApplicationHelper::LABEL_CLASS %>
-        <%= f.date_field :applied_on, class: ApplicationHelper::INPUT_CLASS %>
-      </div>
-    </div>
-
-    <div class="grid gap-5 md:grid-cols-3">
-      <div class="md:col-span-2">
-        <span class="<%= ApplicationHelper::LABEL_CLASS %>">Turmas</span>
-        <div class="flex flex-wrap gap-x-5 gap-y-2">
+        <span class="label">Turmas</span>
+        <div class="flex flex-wrap gap-2">
           <%= f.collection_check_boxes :classroom_ids, @classrooms, :id, :display_name do |b| %>
-            <label class="flex items-center gap-2 text-sm"><%= b.check_box(class: "rounded border-gray-300") %> <%= b.text %></label>
+            <label class="cursor-pointer">
+              <%= b.check_box(class: "peer sr-only") %>
+              <span class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 transition select-none hover:ring-slate-300
+                           peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800 peer-focus-visible:ring-2 peer-focus-visible:ring-green-500
+                           dark:text-slate-300 dark:ring-white/10 dark:peer-checked:bg-green-500 dark:peer-checked:ring-green-500">
+                <%= b.text %>
+              </span>
+            </label>
+          <% end %>
+          <% if @classrooms.empty? %>
+            <p class="text-sm text-slate-500">Nenhuma turma ainda. <%= link_to "Cadastrar turma", new_classroom_path, class: "font-semibold text-green-600 hover:underline" %></p>
           <% end %>
         </div>
-        <% if @classrooms.empty? %>
-          <p class="text-sm text-gray-500">Nenhuma turma. <%= link_to "Cadastrar turma", new_classroom_path, class: "text-indigo-700 underline" %></p>
+      </div>
+
+      <div>
+        <span class="label">Alternativas por questão</span>
+        <div class="inline-flex rounded-xl bg-slate-100 p-1 dark:bg-white/5">
+          <% [ [ 4, "A – D" ], [ 5, "A – E" ] ].each do |value, label| %>
+            <label class="cursor-pointer">
+              <%= f.radio_button :options_count, value, class: "peer sr-only" %>
+              <span class="block rounded-lg px-4 py-1.5 text-sm font-semibold text-slate-500 transition peer-checked:bg-white peer-checked:text-navy-900 peer-checked:shadow-sm dark:peer-checked:bg-navy-800 dark:peer-checked:text-white"><%= label %></span>
+            </label>
+          <% end %>
+        </div>
+      </div>
+    </section>
+
+    <section class="card p-6">
+      <div class="mb-5 flex items-center justify-between">
+        <h2 class="flex items-center gap-2 font-bold text-navy-900 dark:text-white">
+          <span class="flex size-7 items-center justify-center rounded-lg bg-navy-800 text-xs text-white dark:bg-green-500">2</span> Matérias
+        </h2>
+        <%= link_to subjects_path, class: "text-sm font-semibold text-green-600 hover:underline dark:text-green-400", target: "_blank" do %>Gerenciar matérias ↗<% end %>
+      </div>
+
+      <div class="mb-2 hidden grid-cols-12 gap-3 px-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase md:grid">
+        <span class="col-span-5 pl-8">Matéria</span>
+        <span class="col-span-2">Questões</span>
+        <span class="col-span-2">Valor cada</span>
+        <span class="col-span-2">Subtotal</span>
+      </div>
+
+      <div data-exam-form-target="rows" class="space-y-2">
+        <%= f.fields_for :exam_subjects do |sf| %>
+          <%= render "exam_subject_fields", f: sf %>
         <% end %>
       </div>
-      <div>
-        <%= f.label :options_count, class: ApplicationHelper::LABEL_CLASS %>
-        <%= f.select :options_count, [ [ "A–D (4)", 4 ], [ "A–E (5)", 5 ] ], {}, class: ApplicationHelper::INPUT_CLASS %>
+
+      <%# Modelo de linha nova: o Stimulus copia e troca NEW_RECORD por um id único %>
+      <template data-exam-form-target="template">
+        <%= f.fields_for :exam_subjects, ExamSubject.new, child_index: "NEW_RECORD" do |sf| %>
+          <%= render "exam_subject_fields", f: sf %>
+        <% end %>
+      </template>
+
+      <button type="button" data-action="exam-form#add"
+              class="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 py-3 text-sm font-semibold text-slate-500 transition hover:border-green-400 hover:bg-green-50/50 hover:text-green-700 dark:border-white/10 dark:hover:border-green-500/50 dark:hover:bg-green-500/5 dark:hover:text-green-300">
+        <%= icon :plus, class: "size-4" %> Adicionar matéria
+      </button>
+      <p class="hint mt-3 flex items-center gap-1.5"><%= icon :grip, class: "size-3.5" %> Arraste pelas bolinhas para mudar a ordem das matérias no cartão.</p>
+    </section>
+  </div>
+
+  <%# ---------- Resumo fixo ---------- %>
+  <aside class="lg:sticky lg:top-24 lg:self-start">
+    <div class="relative overflow-hidden rounded-2xl bg-navy-900 p-6 text-white shadow-xl shadow-navy-900/20">
+      <div class="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-green-500/30 blur-3xl"></div>
+      <p class="relative text-xs font-bold tracking-[0.18em] text-green-300 uppercase">Resumo</p>
+      <div class="relative mt-4 grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-4xl font-extrabold tracking-tight tabular-nums" data-exam-form-target="totalQuestions">0</p>
+          <p class="text-sm text-navy-200">questões</p>
+        </div>
+        <div>
+          <p class="text-4xl font-extrabold tracking-tight tabular-nums" data-exam-form-target="totalPoints">0</p>
+          <p class="text-sm text-navy-200">pontos</p>
+        </div>
+      </div>
+      <div class="relative mt-5 flex h-2 gap-0.5 overflow-hidden rounded-full bg-white/10" data-exam-form-target="bar"></div>
+      <ul class="relative mt-4 space-y-1.5 text-sm" data-exam-form-target="legend"></ul>
+
+      <div class="relative mt-6 space-y-2">
+        <%= f.button type: "submit", class: "btn btn-accent w-full py-3" do %>
+          <%= icon :check %> <%= exam.new_record? ? "Criar e preencher gabarito" : "Salvar alterações" %>
+        <% end %>
+        <%= link_to "Cancelar", exam.persisted? ? exam : exams_path, class: "btn w-full text-navy-100 hover:bg-white/10" %>
       </div>
     </div>
-  </section>
-
-  <section class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-    <div class="mb-4 flex items-center justify-between">
-      <h2 class="text-lg font-semibold">Matérias</h2>
-      <%= link_to "Gerenciar matérias", subjects_path, class: "text-sm text-indigo-700 hover:underline", target: "_blank" %>
-    </div>
-
-    <div class="mb-2 hidden grid-cols-12 gap-3 text-xs font-medium uppercase text-gray-500 md:grid">
-      <span class="col-span-5">Matéria</span>
-      <span class="col-span-2">Questões</span>
-      <span class="col-span-2">Valor cada</span>
-      <span class="col-span-2">Subtotal</span>
-    </div>
-
-    <div data-exam-form-target="rows" class="space-y-3">
-      <%= f.fields_for :exam_subjects do |sf| %>
-        <%= render "exam_subject_fields", f: sf %>
-      <% end %>
-    </div>
-
-    <%# Modelo de linha nova: o Stimulus copia e troca NEW_RECORD por um id único %>
-    <template data-exam-form-target="template">
-      <%= f.fields_for :exam_subjects, ExamSubject.new, child_index: "NEW_RECORD" do |sf| %>
-        <%= render "exam_subject_fields", f: sf %>
-      <% end %>
-    </template>
-
-    <button type="button" data-action="exam-form#add" class="<%= ApplicationHelper::SECONDARY_BUTTON_CLASS %> mt-4">+ Adicionar matéria</button>
-
-    <div class="mt-6 flex justify-end gap-8 border-t border-gray-100 pt-4 text-sm">
-      <p>Total de questões: <strong data-exam-form-target="totalQuestions">0</strong></p>
-      <p>Total de pontos: <strong data-exam-form-target="totalPoints">0</strong></p>
-    </div>
-  </section>
-
-  <div class="flex gap-2">
-    <%= f.submit exam.new_record? ? "Criar simulado e preencher gabarito" : "Salvar", class: ApplicationHelper::BUTTON_CLASS %>
-    <%= link_to "Cancelar", exam.persisted? ? exam : exams_path, class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
-  </div>
+  </aside>
 <% end %>

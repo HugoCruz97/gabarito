@@ -1,0 +1,5 @@
+out/
+__pycache__/
+
+# Cartões-resposta da escola: ficam só na máquina local, não vão para o Git
+templates/*.pdf

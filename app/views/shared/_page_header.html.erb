@@ -1,9 +1,12 @@
-<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-  <div>
-    <h1 class="text-2xl font-bold"><%= title %></h1>
-    <% if local_assigns[:subtitle] %>
-      <p class="mt-1 text-sm text-gray-500"><%= subtitle %></p>
+<div class="mb-8 flex flex-wrap items-end justify-between gap-4 animate-slide-up">
+  <div class="min-w-0">
+    <% if eyebrow %>
+      <p class="mb-1 text-xs font-bold tracking-[0.18em] text-green-600 uppercase dark:text-green-400"><%= eyebrow %></p>
+    <% end %>
+    <h1 class="text-3xl font-extrabold tracking-tight text-navy-900 sm:text-4xl dark:text-white"><%= title %></h1>
+    <% if subtitle.present? %>
+      <p class="mt-2 text-sm text-slate-500 dark:text-slate-400"><%= subtitle %></p>
     <% end %>
   </div>
-  <div class="flex flex-wrap gap-2"><%= yield %></div>
+  <div class="flex flex-wrap items-center gap-2"><%= yield %></div>
 </div>

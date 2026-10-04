@@ -3,7 +3,7 @@ class ExamsController < ApplicationController
   before_action :load_form_options, only: %i[new edit create update]
 
   def index
-    @exams = Exam.includes(:classrooms, exam_subjects: :subject).order(applied_on: :desc, created_at: :desc)
+    @exams = Exam.includes(:classrooms, :questions, exam_subjects: :subject).order(applied_on: :desc, created_at: :desc)
   end
 
   def show
@@ -53,7 +53,7 @@ class ExamsController < ApplicationController
   def exam_params
     params.expect(exam: [
       :title, :applied_on, :options_count, classroom_ids: [],
-      exam_subjects_attributes: [ [ :id, :subject_id, :questions_count, :points_per_question, :position, :_destroy ] ]
+      exam_subjects_attributes: [ [ :id, :subject_id, :questions_count, :points_per_question, :position, :foreign_language, :_destroy ] ]
     ])
   end
 end

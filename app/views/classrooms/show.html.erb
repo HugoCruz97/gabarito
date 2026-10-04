@@ -1,9 +1,22 @@
 <% content_for :title, @classroom.name %>
-<%= render layout: "shared/page_header", locals: { title: @classroom.display_name, subtitle: pluralize(@classroom.students.size, "aluno") } do %>
-  <%= link_to "Adicionar aluno", new_student_path(classroom_id: @classroom.id), class: ApplicationHelper::BUTTON_CLASS %>
-  <%= link_to "Editar", edit_classroom_path(@classroom), class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
-  <%= button_to "Excluir", @classroom, method: :delete, class: ApplicationHelper::DANGER_BUTTON_CLASS,
-        form: { data: { turbo_confirm: "Excluir a turma #{@classroom.name}?" } } %>
+
+<%= link_to classrooms_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800 dark:hover:text-white" do %>
+  <%= icon :arrow_left, class: "size-4" %> Turmas
 <% end %>
 
-<%= render "students/table", students: @classroom.students, show_classroom: false %>
+<%= page_header @classroom.name, eyebrow: [ "Turma", @classroom.school_year ].compact.join(" · "), subtitle: pluralize(@classroom.students.size, "aluno") do %>
+  <%= link_to new_student_path(classroom_id: @classroom.id), class: "btn btn-primary" do %><%= icon :plus %> Adicionar aluno<% end %>
+  <%= link_to edit_classroom_path(@classroom), class: "btn btn-secondary" do %><%= icon :pencil %> Editar<% end %>
+  <%= button_to classroom_path(@classroom), method: :delete, class: "btn btn-danger btn-icon", title: "Excluir turma",
+        form: { data: { turbo_confirm: "A turma “#{@classroom.name}” será excluída." } } do %>
+    <%= icon :trash %>
+  <% end %>
+<% end %>
+
+<% if @classroom.students.any? %>
+  <%= render "students/table", students: @classroom.students, show_classroom: false %>
+<% else %>
+  <%= empty_state :students, "Nenhum aluno nesta turma", "Cadastre os alunos para vincular as notas dos simulados." do %>
+    <%= link_to new_student_path(classroom_id: @classroom.id), class: "btn btn-primary" do %><%= icon :plus %> Adicionar aluno<% end %>
+  <% end %>
+<% end %>

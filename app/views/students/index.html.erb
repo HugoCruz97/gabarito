@@ -1,17 +1,29 @@
 <% content_for :title, "Alunos" %>
-<%= render layout: "shared/page_header", locals: { title: "Alunos" } do %>
-  <%= link_to "Novo aluno", new_student_path(classroom_id: params[:classroom_id]), class: ApplicationHelper::BUTTON_CLASS %>
+<%= page_header "Alunos", eyebrow: "Escola", subtitle: pluralize(Student.count, "aluno cadastrado", plural: "alunos cadastrados") do %>
+  <%= link_to new_student_path(classroom_id: params[:classroom_id]), class: "btn btn-primary" do %><%= icon :plus %> Novo aluno<% end %>
 <% end %>
 
 <%# Filtro com Turbo Frame: só a tabela é recarregada %>
-<%= form_with url: students_path, method: :get, class: "mb-4 flex flex-wrap gap-2",
+<%= form_with url: students_path, method: :get, class: "mb-5 flex flex-wrap items-center gap-3",
       data: { turbo_frame: "students", turbo_action: "advance", controller: "auto-submit" } do |f| %>
-  <%= f.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
-        class: "#{ApplicationHelper::INPUT_CLASS} max-w-xs", data: { action: "input->auto-submit#submit" } %>
-  <%= f.select :classroom_id, options_from_collection_for_select(@classrooms, :id, :name, params[:classroom_id]),
-        { include_blank: "Todas as turmas" }, class: "#{ApplicationHelper::INPUT_CLASS} max-w-xs", data: { action: "change->auto-submit#submit" } %>
+  <div class="relative w-full max-w-xs">
+    <%= icon :search, class: "pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400" %>
+    <%= f.search_field :q, value: params[:q], placeholder: "Buscar por nome ou matrícula…",
+          class: "input pl-10", data: { action: "input->auto-submit#submit" } %>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <% [ [ "Todas", nil ] ].concat(@classrooms.map { |c| [ c.name, c.id.to_s ] }).each do |label, value| %>
+      <label class="cursor-pointer">
+        <%= f.radio_button :classroom_id, value.to_s, checked: params[:classroom_id].to_s == value.to_s, class: "peer sr-only",
+              data: { action: "change->auto-submit#submit" } %>
+        <span class="inline-flex rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 transition select-none hover:ring-slate-300
+                     peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800
+                     dark:text-slate-300 dark:ring-white/10 dark:peer-checked:bg-green-500 dark:peer-checked:ring-green-500"><%= label %></span>
+      </label>
+    <% end %>
+  </div>
 <% end %>
 
-<%= turbo_frame_tag "students", target: "_top" do %>
+<%= turbo_frame_tag "students" do %>
   <%= render "table", students: @students, show_classroom: true %>
 <% end %>

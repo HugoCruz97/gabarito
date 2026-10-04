@@ -1,0 +1,38 @@
+<%# Paleta de comandos (Ctrl+K): ações rápidas + busca no servidor via Turbo Frame %>
+<dialog data-command-palette-target="dialog" data-action="click->command-palette#backdropClick close->command-palette#reset"
+        class="mx-auto mt-[12vh] w-[calc(100%-2rem)] max-w-xl overflow-hidden rounded-2xl bg-white p-0 shadow-2xl ring-1 ring-slate-200 dark:bg-navy-900 dark:text-slate-200 dark:ring-white/10">
+  <div class="flex items-center gap-3 border-b border-slate-100 px-4 dark:border-white/10">
+    <%= icon :search, class: "size-5 text-slate-400" %>
+    <input type="text" data-command-palette-target="input" data-action="input->command-palette#search keydown->command-palette#navigate"
+           placeholder="Busque um aluno, turma, simulado ou ação…" autocomplete="off" spellcheck="false"
+           class="h-14 flex-1 bg-transparent text-base outline-none placeholder:text-slate-400">
+    <kbd class="kbd">Esc</kbd>
+  </div>
+
+  <div class="max-h-[60vh] overflow-y-auto p-2">
+    <div data-command-palette-target="actions">
+      <p class="px-3 pt-2 pb-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase">Ações rápidas</p>
+      <% [
+           [ "Novo simulado", new_exam_path, :exams ],
+           [ "Nova turma", new_classroom_path, :classrooms ],
+           [ "Novo aluno", new_student_path, :students ],
+           [ "Matérias", subjects_path, :subjects ],
+           [ "Ir para o início", root_path, :dashboard ]
+         ].each do |label, path, icon_name| %>
+        <%= link_to path, data: { command_palette_target: "item", label: label.downcase },
+              class: "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium aria-selected:bg-navy-50 aria-selected:text-navy-900 dark:aria-selected:bg-white/10 dark:aria-selected:text-white" do %>
+          <span class="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 group-aria-selected:bg-navy-800 group-aria-selected:text-white dark:bg-white/5"><%= icon icon_name, class: "size-4" %></span>
+          <%= label %>
+          <%= icon :corner_down_left, class: "ml-auto size-4 text-slate-400 opacity-0 group-aria-selected:opacity-100" %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <turbo-frame id="search_results" data-command-palette-target="results"></turbo-frame>
+  </div>
+
+  <div class="flex items-center gap-4 border-t border-slate-100 bg-slate-50 px-4 py-2.5 text-xs text-slate-500 dark:border-white/10 dark:bg-white/[0.02]">
+    <span class="flex items-center gap-1"><kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd> navegar</span>
+    <span class="flex items-center gap-1"><kbd class="kbd">Enter</kbd> abrir</span>
+  </div>
+</dialog>

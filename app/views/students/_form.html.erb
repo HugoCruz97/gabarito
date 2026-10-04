@@ -1,23 +1,26 @@
-<%= form_with model: student, class: "max-w-lg space-y-5 rounded-lg border border-gray-200 bg-white p-6 shadow-sm" do |f| %>
+<%= form_with model: student, class: "card max-w-xl space-y-5 p-6 sm:p-8" do |f| %>
   <%= render "shared/errors", record: student %>
   <div>
-    <%= f.label :name, class: ApplicationHelper::LABEL_CLASS %>
-    <%= f.text_field :name, autofocus: true, class: ApplicationHelper::INPUT_CLASS %>
+    <%= f.label :name, class: "label" %>
+    <%= f.text_field :name, autofocus: true, placeholder: "Nome completo", class: "input" %>
   </div>
-  <div>
-    <%= f.label :registration_number, class: ApplicationHelper::LABEL_CLASS %>
-    <%= f.text_field :registration_number, class: ApplicationHelper::INPUT_CLASS %>
-    <p class="mt-1 text-xs text-gray-500">Opcional. Use o mesmo número do cartão-resposta, se houver.</p>
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div>
+      <%= f.label :registration_number, class: "label" %>
+      <%= f.text_field :registration_number, class: "input font-mono" %>
+      <p class="hint">Opcional. O mesmo número do cartão-resposta, se houver.</p>
+    </div>
+    <div>
+      <%= f.label :classroom_id, class: "label" %>
+      <%= f.collection_select :classroom_id, Classroom.order(:name), :id, :display_name,
+            { include_blank: "Selecione…" }, class: "input" %>
+    </div>
   </div>
-  <div>
-    <%= f.label :classroom_id, class: ApplicationHelper::LABEL_CLASS %>
-    <%= f.collection_select :classroom_id, Classroom.order(:name), :id, :display_name,
-          { include_blank: "Selecione…" }, class: ApplicationHelper::INPUT_CLASS %>
-  </div>
-  <div class="flex gap-2">
-    <%= f.submit "Salvar", class: ApplicationHelper::BUTTON_CLASS %>
+  <div class="flex flex-wrap gap-2 pt-2">
+    <%= f.button type: "submit", class: "btn btn-primary" do %><%= icon :check %> Salvar<% end %>
     <% if student.new_record? %>
-      <%= f.submit "Salvar e cadastrar outro", name: "add_another", class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
+      <%= f.button type: "submit", name: "add_another", value: "1", class: "btn btn-secondary" do %><%= icon :plus %> Salvar e cadastrar outro<% end %>
     <% end %>
+    <%= link_to "Cancelar", student.persisted? ? student : students_path, class: "btn btn-ghost" %>
   </div>
 <% end %>

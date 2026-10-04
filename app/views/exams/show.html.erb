@@ -1,52 +1,114 @@
 <% content_for :title, @exam.title %>
-<% subtitle = [ (l(@exam.applied_on) if @exam.applied_on), @exam.classrooms.map(&:name).to_sentence.presence ].compact.join(" · ") %>
-<%= render layout: "shared/page_header", locals: { title: @exam.title, subtitle: subtitle } do %>
-  <%= link_to "Gabarito", edit_exam_answer_key_path(@exam), class: ApplicationHelper::BUTTON_CLASS %>
-  <%= link_to "Editar", edit_exam_path(@exam), class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
-  <%= button_to "Excluir", @exam, method: :delete, class: ApplicationHelper::DANGER_BUTTON_CLASS,
-        form: { data: { turbo_confirm: "Excluir o simulado #{@exam.title}? Todas as notas serão perdidas." } } %>
+<% subjects = @exam.exam_subjects.includes(:subject, :questions).to_a %>
+<% total = @exam.total_points %>
+<% progress = @exam.answer_key_progress %>
+
+<%= link_to exams_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800 dark:hover:text-white" do %>
+  <%= icon :arrow_left, class: "size-4" %> Simulados
 <% end %>
 
-<% unless @exam.answer_key_complete? %>
-  <p class="mb-6 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
-    O gabarito ainda está incompleto. <%= link_to "Preencher gabarito", edit_exam_answer_key_path(@exam), class: "font-medium underline" %>
-  </p>
+<%= page_header @exam.title, eyebrow: "Simulado",
+      subtitle: [ (l(@exam.applied_on, format: :long) if @exam.applied_on), @exam.classrooms.map(&:name).to_sentence.presence ].compact.join(" · ") do %>
+  <%= link_to edit_exam_path(@exam), class: "btn btn-secondary" do %><%= icon :pencil %> Editar<% end %>
+  <%= button_to exam_path(@exam), method: :delete, class: "btn btn-danger",
+        form: { data: { turbo_confirm: "O simulado “#{@exam.title}” e todas as notas dele serão excluídos." } } do %>
+    <%= icon :trash %> Excluir
+  <% end %>
 <% end %>
 
-<div class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
-  <table class="min-w-full divide-y divide-gray-200 text-sm">
-    <thead class="bg-gray-50 text-left text-gray-600">
-      <tr>
-        <th class="px-4 py-3 font-medium">Matéria</th>
-        <th class="px-4 py-3 font-medium">Questões</th>
-        <th class="px-4 py-3 text-right font-medium">Valor cada</th>
-        <th class="px-4 py-3 text-right font-medium">Total</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100">
-      <% @exam.exam_subjects.includes(:subject, :questions).each do |exam_subject| %>
-        <tr>
-          <td class="px-4 py-3 font-medium"><%= exam_subject.subject.name %></td>
-          <td class="px-4 py-3 text-gray-600">
-            <%= exam_subject.questions.first&.number %>–<%= exam_subject.questions.last&.number %>
-            (<%= exam_subject.questions_count %>)
-          </td>
-          <td class="px-4 py-3 text-right"><%= points(exam_subject.points_per_question) %></td>
-          <td class="px-4 py-3 text-right"><%= points(exam_subject.total_points) %></td>
-        </tr>
-      <% end %>
-    </tbody>
-    <tfoot class="bg-gray-50 font-semibold">
-      <tr>
-        <td class="px-4 py-3">Total</td>
-        <td class="px-4 py-3"><%= @exam.total_questions %></td>
-        <td></td>
-        <td class="px-4 py-3 text-right"><%= points(@exam.total_points) %></td>
-      </tr>
-    </tfoot>
-  </table>
+<%# ---------- Números ---------- %>
+<div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+  <% [
+       [ "Questões", @exam.total_questions, :hash ],
+       [ "Pontos", points(total), :target ],
+       [ "Matérias", subjects.size, :subjects ],
+       [ "Alternativas", "A–#{@exam.options.last}", :check_circle ]
+     ].each do |label, value, icon_name| %>
+    <div class="card flex items-center gap-4 p-5">
+      <span class="flex size-11 items-center justify-center rounded-xl bg-navy-50 text-navy-700 dark:bg-white/5 dark:text-navy-200"><%= icon icon_name %></span>
+      <div>
+        <p class="text-2xl font-extrabold tracking-tight text-navy-900 tabular-nums dark:text-white"><%= value %></p>
+        <p class="text-xs font-medium text-slate-500"><%= label %></p>
+      </div>
+    </div>
+  <% end %>
 </div>
 
-<section class="mt-8 rounded-lg border border-dashed border-gray-300 p-6 text-center text-gray-500">
-  Cartões-resposta: em breve, aqui você vai enviar as imagens e ver as notas dos alunos.
-</section>
+<div class="grid gap-6 lg:grid-cols-3">
+  <%# ---------- Composição ---------- %>
+  <section class="card overflow-hidden lg:col-span-2">
+    <div class="p-6 pb-4">
+      <h2 class="font-bold text-navy-900 dark:text-white">Composição da nota</h2>
+      <p class="text-sm text-slate-500">Quanto cada matéria pesa no total de <%= points(total) %> pontos.</p>
+      <div class="mt-4 flex h-3 gap-0.5 overflow-hidden rounded-full">
+        <% subjects.each do |es| %>
+          <span title="<%= es.subject.name %>: <%= points(es.total_points) %> pts"
+                class="transition-all hover:opacity-80"
+                style="flex: <%= total.positive? ? es.total_points : 1 %>; background: <%= subject_color(es.subject) %>"></span>
+        <% end %>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr><th>Matéria</th><th>Questões</th><th class="!text-right">Valor cada</th><th class="!text-right">Total</th><th class="!text-right">Peso</th></tr>
+        </thead>
+        <tbody>
+          <% subjects.each do |es| %>
+            <tr>
+              <td>
+                <span class="flex items-center gap-2.5 font-semibold text-navy-900 dark:text-white">
+                  <span class="size-2.5 rounded-full" style="background: <%= subject_color(es.subject) %>"></span><%= es.subject.name %>
+                  <% if es.foreign_language? %><span class="badge badge-green">Inglês / Espanhol</span><% end %>
+                </span>
+              </td>
+              <td class="text-slate-500 tabular-nums">
+                <span class="font-mono text-xs"><%= es.questions.first&.number %>–<%= es.questions.last&.number %></span>
+                <span class="badge badge-slate ml-1"><%= es.questions_count %></span>
+              </td>
+              <td class="text-right tabular-nums"><%= points(es.points_per_question) %></td>
+              <td class="text-right font-semibold tabular-nums"><%= points(es.total_points) %></td>
+              <td class="text-right text-slate-500 tabular-nums"><%= total.positive? ? number_to_percentage(es.total_points * 100 / total, precision: 0) : "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <aside class="space-y-6">
+    <%# ---------- Gabarito ---------- %>
+    <section class="card p-6">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-navy-900 dark:text-white">Gabarito</h2>
+        <span class="badge <%= progress == 100 ? 'badge-green' : 'badge-gold' %>"><%= progress %>%</span>
+      </div>
+      <%# Anel de progresso %>
+      <div class="my-6 flex justify-center">
+        <div class="relative size-32">
+          <svg viewBox="0 0 36 36" class="size-full -rotate-90">
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" class="stroke-slate-100 dark:stroke-white/5"/>
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" stroke-linecap="round" pathLength="100"
+                    stroke-dasharray="<%= progress %> 100" class="<%= progress == 100 ? 'stroke-green-500' : 'stroke-gold-400' %> transition-all duration-700"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-3xl font-extrabold text-navy-900 dark:text-white"><%= progress %>%</span>
+            <span class="text-xs text-slate-500">preenchido</span>
+          </div>
+        </div>
+      </div>
+      <%= link_to edit_exam_answer_key_path(@exam), class: "btn #{progress == 100 ? 'btn-secondary' : 'btn-primary'} w-full" do %>
+        <%= icon :keyboard %> <%= progress == 100 ? "Revisar gabarito" : "Preencher gabarito" %>
+      <% end %>
+    </section>
+
+    <%# ---------- Cartões (em breve) ---------- %>
+    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-800 to-navy-950 p-6 text-white">
+      <div class="pointer-events-none absolute -top-10 -right-10 size-40 rounded-full bg-green-500/30 blur-2xl"></div>
+      <span class="relative flex size-11 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/15"><%= icon :scan %></span>
+      <h2 class="relative mt-4 font-bold">Correção por foto</h2>
+      <p class="relative mt-1 text-sm text-navy-100/80">Em breve: envie as fotos dos cartões-resposta e as notas saem automaticamente.</p>
+      <span class="badge relative mt-4 bg-gold-400/20 text-gold-300 ring-1 ring-gold-400/30">Em desenvolvimento</span>
+    </section>
+  </aside>
+</div>

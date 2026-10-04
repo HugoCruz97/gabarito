@@ -1,0 +1,31 @@
+<%# Uma linha do gabarito. Em língua estrangeira a mesma questão aparece duas vezes,
+    com gabarito e anulação independentes:
+    Inglês   → correct_option    / annulled
+    Espanhol → correct_option_es / annulled_es %>
+<% base = "questions[#{question.id}]" %>
+<% annul_field = field == :correct_option_es ? :annulled_es : :annulled %>
+<% annulled = question.public_send(annul_field) %>
+<%= tag.div data: { answer_key_target: "question", action: "click->answer-key#focusQuestion" },
+      class: "group flex items-center gap-3 rounded-xl px-3 py-2 ring-1 ring-transparent transition
+              data-[current]:bg-green-50 data-[current]:ring-green-300 data-[annulled]:opacity-60
+              dark:data-[current]:bg-green-500/10 dark:data-[current]:ring-green-500/40" do %>
+  <span class="w-7 text-right font-mono text-sm font-bold text-slate-400 group-data-[current]:text-green-700 dark:group-data-[current]:text-green-300"><%= question.number %></span>
+  <div class="flex gap-1.5">
+    <% @exam.options.each do |option| %>
+      <label class="cursor-pointer has-[:disabled]:cursor-not-allowed">
+        <%= radio_button_tag "#{base}[#{field}]", option, question.public_send(field) == option,
+              id: "q#{question.id}_#{field}_#{option}", class: "peer sr-only", disabled: annulled,
+              data: { action: "change->answer-key#answered" } %>
+        <span class="bubble"><%= option %></span>
+      </label>
+    <% end %>
+  </div>
+  <label class="ml-auto cursor-pointer" title="Anular questão (todos ganham o ponto)">
+    <%= hidden_field_tag "#{base}[#{annul_field}]", "0", id: nil %>
+    <%= check_box_tag "#{base}[#{annul_field}]", "1", annulled, id: "q#{question.id}_#{annul_field}", class: "peer sr-only",
+          data: { answer_key_target: "annul", action: "change->answer-key#refresh" } %>
+    <span class="flex size-8 items-center justify-center rounded-lg text-slate-300 transition hover:bg-slate-100 hover:text-slate-500 peer-checked:bg-gold-100 peer-checked:text-gold-700 dark:hover:bg-white/5 dark:peer-checked:bg-gold-400/15 dark:peer-checked:text-gold-300">
+      <%= icon :ban, class: "size-4" %>
+    </span>
+  </label>
+<% end %>

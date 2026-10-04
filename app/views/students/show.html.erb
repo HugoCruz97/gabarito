@@ -1,8 +1,28 @@
 <% content_for :title, @student.name %>
-<%= render layout: "shared/page_header", locals: { title: @student.name, subtitle: "#{@student.classroom.display_name} · Matrícula: #{@student.registration_number || '—'}" } do %>
-  <%= link_to "Editar", edit_student_path(@student), class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
-  <%= button_to "Excluir", @student, method: :delete, class: ApplicationHelper::DANGER_BUTTON_CLASS,
-        form: { data: { turbo_confirm: "Excluir #{@student.name}?" } } %>
+
+<%= link_to @student.classroom, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800 dark:hover:text-white" do %>
+  <%= icon :arrow_left, class: "size-4" %> <%= @student.classroom.name %>
 <% end %>
 
-<p class="text-gray-500">As notas dos simulados deste aluno aparecerão aqui.</p>
+<div class="card relative mb-6 overflow-hidden p-6 sm:p-8 animate-slide-up">
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-24 gradient-brand opacity-90"></div>
+  <div class="relative flex flex-wrap items-end gap-5 pt-8">
+    <span class="rounded-full ring-4 ring-white dark:ring-navy-900"><%= avatar(@student.name, size: "size-20 text-2xl") %></span>
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl dark:text-white"><%= @student.name %></h1>
+      <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <span class="badge badge-navy"><%= @student.classroom.display_name %></span>
+        <span class="font-mono text-xs">Matrícula: <%= @student.registration_number || "—" %></span>
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to edit_student_path(@student), class: "btn btn-secondary" do %><%= icon :pencil %> Editar<% end %>
+      <%= button_to student_path(@student), method: :delete, class: "btn btn-danger btn-icon", title: "Excluir aluno",
+            form: { data: { turbo_confirm: "#{@student.name} será excluído(a)." } } do %>
+        <%= icon :trash %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= empty_state :target, "Notas em breve", "Quando a correção dos cartões estiver pronta, o desempenho deste aluno em cada simulado aparecerá aqui, por matéria." %>

@@ -1,24 +1,38 @@
 <% if students.any? %>
-  <div class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
-    <table class="min-w-full divide-y divide-gray-200 text-sm">
-      <thead class="bg-gray-50 text-left text-gray-600">
-        <tr>
-          <th class="px-4 py-3 font-medium">Nome</th>
-          <th class="px-4 py-3 font-medium">Matrícula</th>
-          <% if show_classroom %><th class="px-4 py-3 font-medium">Turma</th><% end %>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <% students.each do |student| %>
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-3"><%= link_to student.name, student, class: "font-medium text-indigo-700 hover:underline" %></td>
-            <td class="px-4 py-3 text-gray-600"><%= student.registration_number || "—" %></td>
-            <% if show_classroom %><td class="px-4 py-3 text-gray-600"><%= student.classroom.name %></td><% end %>
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Aluno</th>
+            <th>Matrícula</th>
+            <% if show_classroom %><th>Turma</th><% end %>
+            <th class="w-10"></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% students.each do |student| %>
+            <tr class="group">
+              <td>
+                <%= link_to student, class: "flex items-center gap-3 font-semibold text-navy-900 hover:text-green-700 dark:text-white dark:hover:text-green-300", data: { turbo_frame: "_top" } do %>
+                  <%= avatar(student.name) %> <%= student.name %>
+                <% end %>
+              </td>
+              <td class="font-mono text-xs text-slate-500"><%= student.registration_number || "—" %></td>
+              <% if show_classroom %>
+                <td><span class="badge badge-navy"><%= student.classroom.name %></span></td>
+              <% end %>
+              <td class="text-right">
+                <%= link_to edit_student_path(student), class: "btn btn-ghost btn-icon btn-sm opacity-0 transition group-hover:opacity-100 focus:opacity-100", title: "Editar", data: { turbo_frame: "_top" } do %>
+                  <%= icon :pencil, class: "size-4" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 <% else %>
-  <p class="text-gray-500">Nenhum aluno encontrado.</p>
+  <div class="card px-6 py-12 text-center text-sm text-slate-500">Nenhum aluno encontrado.</div>
 <% end %>

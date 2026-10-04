@@ -1,10 +1,13 @@
 <% if record.errors.any? %>
-  <div class="mb-6 rounded-md bg-red-50 px-4 py-3 text-red-800">
-    <p class="font-medium">Corrija os itens abaixo:</p>
-    <ul class="mt-1 list-disc pl-5 text-sm">
-      <% record.errors.full_messages.uniq.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
+  <div class="mb-6 flex gap-3 rounded-2xl bg-red-50 p-4 text-red-800 ring-1 ring-red-200 animate-slide-up dark:bg-red-500/10 dark:text-red-300 dark:ring-red-500/20">
+    <%= icon :alert, class: "mt-0.5 size-5 shrink-0" %>
+    <div>
+      <p class="font-semibold">Corrija os itens abaixo:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm">
+        <% record.errors.full_messages.uniq.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
   </div>
 <% end %>

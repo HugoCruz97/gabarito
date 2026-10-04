@@ -1,1 +1,195 @@
 @import "tailwindcss";
+
+/* Modo escuro controlado pela classe .dark no <html> (theme_controller.js) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   Paleta Colégio Metaverso
+   navy  #1C2D61 (primária)  · green #006C21 (secundária)
+   gold  #F8B81F (destaque)  · degradê verde → azul do site
+   ============================================================ */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-navy-50: #eef2fa;
+  --color-navy-100: #d9e1f3;
+  --color-navy-200: #b5c4e6;
+  --color-navy-300: #8ba0d3;
+  --color-navy-400: #5f78b9;
+  --color-navy-500: #41589d;
+  --color-navy-600: #2f4381;
+  --color-navy-700: #24366f;
+  --color-navy-800: #1c2d61;
+  --color-navy-900: #15214a;
+  --color-navy-950: #0b1330;
+
+  --color-green-50: #ebfaf0;
+  --color-green-100: #cff3db;
+  --color-green-200: #a0e6b9;
+  --color-green-300: #63d18f;
+  --color-green-400: #31b978;
+  --color-green-500: #10a04a;
+  --color-green-600: #008530;
+  --color-green-700: #006c21;
+  --color-green-800: #05561d;
+  --color-green-900: #07461a;
+  --color-green-950: #02270c;
+
+  --color-gold-50: #fef8e7;
+  --color-gold-100: #fdedc0;
+  --color-gold-200: #fcdf8a;
+  --color-gold-300: #fad055;
+  --color-gold-400: #f8b81f;
+  --color-gold-500: #e59e07;
+  --color-gold-600: #bf7a04;
+  --color-gold-700: #985b09;
+
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-slide-up: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-toast-in: toast-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv11", "ss01";
+    color-scheme: light;
+  }
+  html.dark { color-scheme: dark; }
+
+  body {
+    @apply bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-200;
+  }
+
+  ::selection { @apply bg-green-200 text-navy-900; }
+
+  :focus-visible { @apply outline-2 outline-offset-2 outline-green-500; }
+
+  /* Transição suave entre páginas (View Transitions API + Turbo) */
+  ::view-transition-old(main),
+  ::view-transition-new(main) { animation-duration: 0.2s; }
+  main { view-transition-name: main; }
+}
+
+@layer components {
+  /* ---------- Botões ---------- */
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold
+           whitespace-nowrap transition-all duration-150 select-none active:scale-[0.97]
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn svg { @apply size-4 shrink-0; }
+  .btn-primary {
+    @apply bg-gradient-to-br from-navy-700 to-navy-900 text-white shadow-lg shadow-navy-900/20
+           hover:from-navy-600 hover:to-navy-800 hover:shadow-navy-900/30
+           dark:from-green-500 dark:to-green-700 dark:shadow-green-900/30 dark:hover:from-green-400 dark:hover:to-green-600;
+  }
+  .btn-accent {
+    @apply bg-gradient-to-br from-green-500 to-green-700 text-white shadow-lg shadow-green-700/25 hover:from-green-400 hover:to-green-600;
+  }
+  .btn-secondary {
+    @apply bg-white text-slate-700 ring-1 ring-slate-200 ring-inset shadow-sm hover:bg-slate-50 hover:ring-slate-300
+           dark:bg-white/5 dark:text-slate-200 dark:ring-white/10 dark:hover:bg-white/10;
+  }
+  .btn-ghost {
+    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white;
+  }
+  .btn-danger {
+    @apply text-red-600 ring-1 ring-red-200 ring-inset hover:bg-red-50 dark:text-red-400 dark:ring-red-500/30 dark:hover:bg-red-500/10;
+  }
+  .btn-sm { @apply rounded-lg px-3 py-1.5 text-xs; }
+  .btn-icon { @apply size-9 p-0; }
+
+  /* ---------- Cartões ---------- */
+  .card {
+    @apply rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-[0_1px_3px_rgba(16,24,64,0.04),0_8px_24px_-12px_rgba(16,24,64,0.08)]
+           dark:bg-navy-900/60 dark:ring-white/[0.07] dark:shadow-none;
+  }
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:ring-navy-200 hover:shadow-[0_12px_32px_-12px_rgba(28,45,97,0.25)]
+           dark:hover:ring-green-500/30;
+  }
+
+  /* ---------- Formulários ---------- */
+  .label { @apply mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300; }
+  .hint { @apply mt-1.5 text-xs text-slate-500 dark:text-slate-400; }
+  .input {
+    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-slate-200 ring-inset
+           placeholder:text-slate-400 transition focus:ring-2 focus:ring-green-500 focus:outline-none
+           dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-slate-500 dark:focus:ring-green-400;
+  }
+  select.input { @apply pr-9; }
+  /* A lista aberta do <select> é desenhada pelo sistema e não herda o fundo
+     translúcido do campo: sem isto, no modo escuro fica texto branco em fundo branco */
+  select option,
+  select optgroup { @apply bg-white text-slate-900; }
+  .dark select option,
+  .dark select optgroup { @apply bg-navy-900 text-slate-100; }
+  .checkbox {
+    @apply size-4 cursor-pointer rounded border-slate-300 text-green-600 accent-green-600 focus:ring-green-500;
+  }
+
+  /* ---------- Badges ---------- */
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+  .badge-navy { @apply bg-navy-50 text-navy-700 ring-1 ring-navy-100 ring-inset dark:bg-navy-400/10 dark:text-navy-200 dark:ring-navy-400/20; }
+  .badge-green { @apply bg-green-50 text-green-700 ring-1 ring-green-100 ring-inset dark:bg-green-400/10 dark:text-green-300 dark:ring-green-400/20; }
+  .badge-gold { @apply bg-gold-50 text-gold-700 ring-1 ring-gold-100 ring-inset dark:bg-gold-400/10 dark:text-gold-300 dark:ring-gold-400/20; }
+  .badge-slate { @apply bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400; }
+
+  /* ---------- Tabelas ---------- */
+  .table { @apply min-w-full text-sm; }
+  .table thead th {
+    @apply px-5 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400;
+  }
+  .table tbody tr { @apply border-t border-slate-100 transition-colors hover:bg-slate-50/70 dark:border-white/5 dark:hover:bg-white/[0.03]; }
+  .table td { @apply px-5 py-3.5; }
+
+  /* ---------- Navegação lateral ---------- */
+  .nav-item {
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-navy-100/80 transition
+           hover:bg-white/10 hover:text-white;
+  }
+  .nav-item svg { @apply size-5 shrink-0 opacity-80; }
+  .nav-item[aria-current="page"] {
+    @apply bg-white/[0.12] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)];
+  }
+  .nav-item[aria-current="page"] svg { @apply text-gold-400 opacity-100; }
+
+  .kbd {
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-1.5
+           font-sans text-[11px] font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400;
+  }
+
+  /* Bolinhas do gabarito (parecem as do cartão-resposta) */
+  .bubble {
+    @apply flex size-9 items-center justify-center rounded-full text-sm font-bold text-slate-500 ring-1 ring-slate-200 ring-inset
+           transition-all duration-150 select-none hover:ring-navy-300 hover:text-navy-700
+           peer-checked:scale-105 peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800 peer-checked:shadow-md peer-checked:shadow-navy-900/30
+           peer-focus-visible:ring-2 peer-focus-visible:ring-green-500
+           peer-disabled:opacity-35 peer-disabled:hover:text-slate-500 peer-disabled:hover:ring-slate-200
+           dark:peer-disabled:hover:text-slate-400 dark:peer-disabled:hover:ring-white/15
+           dark:text-slate-400 dark:ring-white/15 dark:hover:ring-green-400 dark:hover:text-white
+           dark:peer-checked:bg-green-500 dark:peer-checked:ring-green-500;
+  }
+
+  .gradient-brand { @apply bg-gradient-to-br from-green-400 via-green-600 to-navy-800; }
+  .text-gradient-brand { @apply bg-gradient-to-r from-green-500 to-navy-700 bg-clip-text text-transparent dark:from-green-300 dark:to-navy-200; }
+}
+
+/* Diálogo nativo (<dialog>) com fundo desfocado */
+dialog::backdrop { @apply bg-navy-950/50 backdrop-blur-sm; }
+dialog[open] { @apply animate-slide-up; }

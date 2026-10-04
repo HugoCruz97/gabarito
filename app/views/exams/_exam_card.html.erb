@@ -1,0 +1,44 @@
+<% progress = exam.answer_key_progress %>
+<% total = exam.total_points %>
+<%= link_to exam, class: "card card-hover group relative flex flex-col overflow-hidden p-5" do %>
+  <%# Distribuição dos pontos por matéria %>
+  <div class="absolute inset-x-0 top-0 flex h-1.5">
+    <% exam.exam_subjects.each do |es| %>
+      <span style="flex: <%= total.positive? ? es.total_points : 1 %>; background: <%= subject_color(es.subject) %>"></span>
+    <% end %>
+  </div>
+
+  <div class="flex items-start justify-between gap-3">
+    <div class="min-w-0">
+      <p class="truncate text-base font-bold text-navy-900 group-hover:text-navy-700 dark:text-white"><%= exam.title %></p>
+      <p class="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+        <%= icon :calendar, class: "size-3.5" %> <%= exam.applied_on ? l(exam.applied_on) : "Sem data" %>
+        <span class="text-slate-300">•</span>
+        <%= exam.classrooms.map(&:name).to_sentence.presence || "Sem turma" %>
+      </p>
+    </div>
+    <% if progress == 100 %>
+      <span class="badge badge-green"><%= icon :check, class: "size-3" %> Pronto</span>
+    <% else %>
+      <span class="badge badge-gold">Gabarito <%= progress %>%</span>
+    <% end %>
+  </div>
+
+  <div class="mt-4 flex flex-wrap gap-1.5">
+    <% exam.exam_subjects.each do |es| %>
+      <span class="inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-100 dark:bg-white/5 dark:text-slate-300 dark:ring-white/5">
+        <span class="size-2 rounded-full" style="background: <%= subject_color(es.subject) %>"></span><%= es.subject.name %><%= " (EN/ES)" if es.foreign_language? %>
+      </span>
+    <% end %>
+  </div>
+
+  <div class="mt-auto flex items-end justify-between pt-5">
+    <div class="flex gap-5 text-sm">
+      <p><span class="block text-xl font-extrabold text-navy-900 tabular-nums dark:text-white"><%= exam.total_questions %></span><span class="text-xs text-slate-500">questões</span></p>
+      <p><span class="block text-xl font-extrabold text-navy-900 tabular-nums dark:text-white"><%= points(total) %></span><span class="text-xs text-slate-500">pontos</span></p>
+    </div>
+    <span class="flex size-9 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition group-hover:bg-navy-800 group-hover:text-white dark:bg-white/5 dark:group-hover:bg-green-500">
+      <%= icon :arrow_right, class: "size-4" %>
+    </span>
+  </div>
+<% end %>

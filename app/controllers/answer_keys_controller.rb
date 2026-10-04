@@ -8,10 +8,12 @@ class AnswerKeysController < ApplicationController
   def update
     ExamQuestion.transaction do
       params.fetch(:questions, {}).each do |id, attrs|
-        @exam.questions.find(id).update!(
-          correct_option: attrs[:correct_option],
-          annulled: attrs[:annulled] == "1"
-        )
+        question = @exam.questions.find(id)
+        changes = { correct_option: attrs[:correct_option], annulled: attrs[:annulled] == "1" }
+        if question.foreign_language?
+          changes.merge!(correct_option_es: attrs[:correct_option_es], annulled_es: attrs[:annulled_es] == "1")
+        end
+        question.update!(changes)
       end
     end
     redirect_to @exam, notice: "Gabarito salvo."

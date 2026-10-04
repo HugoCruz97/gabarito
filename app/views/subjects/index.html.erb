@@ -1,20 +1,22 @@
 <% content_for :title, "Matérias" %>
-<%= render layout: "shared/page_header", locals: { title: "Matérias", subtitle: "Cadastre uma vez e reutilize em todos os simulados." } do %><% end %>
+<%= page_header "Matérias", eyebrow: "Catálogo", subtitle: "Cadastre uma vez e reutilize em todos os simulados." %>
 
-<%= form_with model: @subject, class: "mb-6 flex max-w-lg gap-2" do |f| %>
-  <%= f.text_field :name, placeholder: "Nova matéria (ex.: Matemática)", class: ApplicationHelper::INPUT_CLASS %>
-  <%= f.submit "Adicionar", class: ApplicationHelper::BUTTON_CLASS %>
-<% end %>
-<% if @subject.errors.any? %>
-  <p class="-mt-4 mb-6 text-sm text-red-600"><%= @subject.errors.full_messages.to_sentence %></p>
-<% end %>
+<div class="max-w-2xl">
+  <%= form_with model: @subject, class: "card mb-6 flex gap-2 p-2" do |f| %>
+    <%= f.text_field :name, placeholder: "Nova matéria (ex.: Matemática)", class: "input flex-1 !shadow-none !ring-0" %>
+    <%= f.button type: "submit", class: "btn btn-primary" do %><%= icon :plus %> Adicionar<% end %>
+  <% end %>
+  <% if @subject.errors.any? %>
+    <p class="-mt-4 mb-6 px-2 text-sm text-red-600"><%= @subject.errors.full_messages.to_sentence %></p>
+  <% end %>
 
-<% if @subjects.any? %>
-  <ul class="max-w-lg divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white shadow-sm">
-    <% @subjects.each do |subject| %>
-      <li><%= render subject %></li>
-    <% end %>
-  </ul>
-<% else %>
-  <p class="text-gray-500">Nenhuma matéria cadastrada ainda.</p>
-<% end %>
+  <% if @subjects.any? %>
+    <ul class="card divide-y divide-slate-100 overflow-hidden dark:divide-white/5">
+      <% @subjects.each do |subject| %>
+        <li><%= render subject %></li>
+      <% end %>
+    </ul>
+  <% else %>
+    <%= empty_state :subjects, "Nenhuma matéria ainda", "Adicione as matérias que aparecem nos simulados: Português, Matemática, Ciências…" %>
+  <% end %>
+</div>
