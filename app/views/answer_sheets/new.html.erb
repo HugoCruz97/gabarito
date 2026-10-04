@@ -1,0 +1,73 @@
+<% content_for :title, "Enviar cartões · #{@exam.title}" %>
+
+<%= link_to exam_path(@exam), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800" do %>
+  <%= icon :arrow_left, class: "size-4" %> <%= @exam.title %>
+<% end %>
+
+<%= page_header "Enviar cartões-resposta", eyebrow: "Correção automática",
+      subtitle: "Escolha as fotos e indique de qual aluno é cada cartão. A leitura começa assim que você enviar." %>
+
+<%= form_with url: exam_answer_sheets_path(@exam), multipart: true,
+      data: { controller: "sheet-upload", action: "submit->sheet-upload#submit" }, class: "grid gap-6 lg:grid-cols-3" do %>
+  <div class="space-y-4 lg:col-span-2">
+    <%# Área de soltar arquivos %>
+    <label data-sheet-upload-target="dropzone"
+           data-action="dragover->sheet-upload#dragover dragleave->sheet-upload#dragleave drop->sheet-upload#drop"
+           class="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-white px-6 py-12 text-center transition
+                  hover:border-green-400 hover:bg-green-50/40 data-[over]:border-green-500 data-[over]:bg-green-50">
+      <span class="mb-4 flex size-14 items-center justify-center rounded-2xl gradient-brand text-white shadow-lg shadow-green-700/20 transition group-hover:scale-105">
+        <%= icon :scan, class: "size-7" %>
+      </span>
+      <span class="text-base font-bold text-navy-900">Arraste as fotos dos cartões aqui</span>
+      <span class="mt-1 text-sm text-slate-500">ou clique para escolher · JPG, PNG ou WEBP · várias de uma vez</span>
+      <input type="file" accept="image/jpeg,image/png,image/webp" multiple class="sr-only"
+             data-sheet-upload-target="picker" data-action="change->sheet-upload#pick">
+    </label>
+
+    <div data-sheet-upload-target="list" class="space-y-2"></div>
+
+    <%# Modelo de linha (uma por foto) %>
+    <template data-sheet-upload-target="template">
+      <div data-sheet-upload-target="row" class="card flex flex-wrap items-center gap-4 p-3 animate-slide-up">
+        <img data-role="thumb" alt="" class="h-20 w-16 shrink-0 rounded-lg bg-slate-100 object-cover ring-1 ring-slate-200">
+        <div class="min-w-0 flex-1">
+          <p data-role="name" class="truncate text-sm font-semibold text-navy-900"></p>
+          <p data-role="size" class="text-xs text-slate-500"></p>
+        </div>
+        <input type="file" name="sheets[INDEX][image]" class="hidden" data-role="file">
+        <select name="sheets[INDEX][student_id]" data-role="student" data-action="change->sheet-upload#syncStudents"
+                class="input w-full sm:w-72" aria-label="Aluno">
+          <option value="">Selecione o aluno…</option>
+          <% @students.each do |student| %>
+            <%= tag.option "#{student.name} · #{student.classroom.name}", value: student.id,
+                  disabled: @students_with_sheet.include?(student.id), data: { taken: @students_with_sheet.include?(student.id) } %>
+          <% end %>
+        </select>
+        <button type="button" data-action="sheet-upload#remove" class="btn btn-ghost btn-icon text-slate-400 hover:!bg-red-50 hover:!text-red-600" aria-label="Remover foto">
+          <%= icon :x, class: "size-4" %>
+        </button>
+      </div>
+    </template>
+  </div>
+
+  <aside class="lg:sticky lg:top-24 lg:self-start">
+    <div class="relative overflow-hidden rounded-2xl bg-navy-900 p-6 text-white shadow-xl shadow-navy-900/20">
+      <div class="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-green-500/30 blur-3xl"></div>
+      <p class="relative text-xs font-bold tracking-[0.18em] text-green-300 uppercase">Envio</p>
+      <p class="relative mt-3 text-4xl font-extrabold tabular-nums"><span data-sheet-upload-target="count">0</span></p>
+      <p class="relative text-sm text-navy-200">fotos selecionadas</p>
+      <p class="relative mt-2 text-xs text-gold-300" data-sheet-upload-target="missing" hidden></p>
+
+      <button type="submit" data-sheet-upload-target="submit" disabled data-turbo-submits-with="Enviando…"
+              class="btn btn-accent relative mt-6 w-full py-3">
+        <%= icon :scan %> Enviar para correção
+      </button>
+
+      <ul class="relative mt-6 space-y-2 text-xs text-navy-100/80">
+        <li class="flex gap-2"><%= icon :check, class: "size-4 shrink-0 text-green-300" %> Fotografe o cartão inteiro, de cima, com boa luz.</li>
+        <li class="flex gap-2"><%= icon :check, class: "size-4 shrink-0 text-green-300" %> Pode ser torta: o sistema endireita sozinho.</li>
+        <li class="flex gap-2"><%= icon :check, class: "size-4 shrink-0 text-green-300" %> Dá para indicar o aluno depois, na revisão.</li>
+      </ul>
+    </div>
+  </aside>
+<% end %>

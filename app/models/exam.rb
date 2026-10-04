@@ -31,6 +31,16 @@ class Exam < ApplicationRecord
     exam_subjects.sum(&:total_points)
   end
 
+  # Gabarito, anulação ou matérias mudaram: as notas já calculadas precisam acompanhar
+  def regrade_answer_sheets!
+    answer_sheets.where(status: %w[read reviewed]).includes(:answers).find_each(&:grade!)
+  end
+
+  # Próximo cartão lido que ainda precisa de revisão (para revisar em sequência)
+  def next_sheet_to_review(after: nil)
+    answer_sheets.read.includes(:student, :answers).by_student_name.reject { |s| s == after }.find(&:needs_review?)
+  end
+
   def foreign_language?
     exam_subjects.any?(&:foreign_language?)
   end

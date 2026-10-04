@@ -3,9 +3,9 @@
   <div class="relative mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl gradient-brand text-white shadow-xl shadow-green-700/20">
     <%= icon icon_name, class: "size-7" %>
   </div>
-  <h3 class="relative text-lg font-bold text-navy-900 dark:text-white"><%= title %></h3>
+  <h3 class="relative text-lg font-bold text-navy-900"><%= title %></h3>
   <% if description %>
-    <p class="relative mx-auto mt-2 max-w-md text-sm text-slate-500 dark:text-slate-400"><%= description %></p>
+    <p class="relative mx-auto mt-2 max-w-md text-sm text-slate-500"><%= description %></p>
   <% end %>
   <div class="relative mt-6 flex justify-center gap-2"><%= yield %></div>
 </div>

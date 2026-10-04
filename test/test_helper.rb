@@ -10,6 +10,11 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    include ActionDispatch::TestProcess::FixtureFile
+
+    # Foto mínima para criar cartões-resposta nos testes
+    def sheet_image
+      fixture_file_upload("cartao.jpg", "image/jpeg")
+    end
   end
 end

@@ -16,8 +16,8 @@ unless Exam.exists?(title: "Simulado 1º bimestre")
     applied_on: Date.current,
     classrooms: [ classroom ],
     exam_subjects_attributes: [
-      { subject_id: subjects[0].id, questions_count: 10, points_per_question: 0.5, position: 0 },
-      { subject_id: subjects[1].id, questions_count: 10, points_per_question: 0.5, position: 1 }
+      { subject_id: subjects[0].id, questions_count: 10, position: 0 },
+      { subject_id: subjects[1].id, questions_count: 10, position: 1 }
     ]
   )
   exam.questions.each { |q| q.update!(correct_option: Exam::OPTIONS.first(exam.options_count).sample) }

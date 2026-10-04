@@ -17,8 +17,7 @@
         <%= f.radio_button :classroom_id, value.to_s, checked: params[:classroom_id].to_s == value.to_s, class: "peer sr-only",
               data: { action: "change->auto-submit#submit" } %>
         <span class="inline-flex rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 transition select-none hover:ring-slate-300
-                     peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800
-                     dark:text-slate-300 dark:ring-white/10 dark:peer-checked:bg-green-500 dark:peer-checked:ring-green-500"><%= label %></span>
+                     peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800"><%= label %></span>
       </label>
     <% end %>
   </div>

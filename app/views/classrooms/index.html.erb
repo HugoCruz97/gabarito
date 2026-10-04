@@ -12,14 +12,14 @@
           <span class="flex size-12 items-center justify-center rounded-2xl gradient-brand text-white shadow-lg shadow-green-700/20"><%= icon :classrooms %></span>
           <% if classroom.school_year %><span class="badge badge-navy"><%= classroom.school_year %></span><% end %>
         </div>
-        <p class="relative mt-5 text-xl font-extrabold tracking-tight text-navy-900 dark:text-white"><%= classroom.name %></p>
+        <p class="relative mt-5 text-xl font-extrabold tracking-tight text-navy-900"><%= classroom.name %></p>
         <div class="relative mt-4 flex items-center justify-between">
           <div class="flex -space-x-2">
             <% classroom.students.first(5).each do |student| %>
-              <span class="rounded-full ring-2 ring-white dark:ring-navy-900"><%= avatar(student.name, size: "size-8 text-[10px]") %></span>
+              <span class="rounded-full ring-2 ring-white"><%= avatar(student.name, size: "size-8 text-[10px]") %></span>
             <% end %>
             <% if classroom.students.size > 5 %>
-              <span class="flex size-8 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-500 ring-2 ring-white dark:bg-white/10 dark:ring-navy-900">+<%= classroom.students.size - 5 %></span>
+              <span class="flex size-8 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-500 ring-2 ring-white">+<%= classroom.students.size - 5 %></span>
             <% end %>
           </div>
           <span class="text-sm font-medium text-slate-500"><%= pluralize(classroom.students.size, "aluno") %></span>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-controller="theme">
+<html lang="pt-BR">
   <head>
     <title><%= content_for?(:title) ? "#{yield(:title)} · Metaverso Simulados" : "Metaverso Simulados" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -11,14 +11,6 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
-
-    <%# Aplica o tema antes de pintar a tela, para não piscar %>
-    <script>
-      try {
-        const t = localStorage.getItem("theme")
-        if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.classList.add("dark")
-      } catch (e) {}
-    </script>
 
     <%= yield :head %>
 
@@ -60,18 +52,11 @@
         <%= nav_link "Alunos", students_path, :students %>
         <%= nav_link "Matérias", subjects_path, :subjects %>
       </nav>
-
-      <div class="relative m-4 rounded-2xl bg-linear-to-br from-gold-400/20 to-green-500/10 p-4 ring-1 ring-white/10">
-        <div class="flex items-center gap-2 text-sm font-bold text-gold-300">
-          <%= icon :sparkles, class: "size-4" %> Em breve
-        </div>
-        <p class="mt-1 text-xs leading-relaxed text-navy-100/80">Correção automática por foto do cartão-resposta.</p>
-      </div>
     </aside>
 
     <%# ---------- Conteúdo ---------- %>
     <div class="lg:pl-72">
-      <header class="sticky top-0 z-20 border-b border-slate-200/70 bg-slate-50/75 backdrop-blur-xl dark:border-white/5 dark:bg-navy-950/70">
+      <header class="sticky top-0 z-20 border-b border-slate-200/70 bg-slate-50/75 backdrop-blur-xl">
         <div class="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-8">
           <button type="button" data-action="sidebar#open" class="btn btn-ghost btn-icon lg:hidden" aria-label="Abrir menu">
             <%= icon :menu %>
@@ -79,14 +64,10 @@
           <span class="flex items-center gap-2 font-bold lg:hidden"><%= brand_mark(class: "size-7") %> Simulados</span>
 
           <button type="button" data-action="command-palette#open"
-                  class="ml-auto flex w-full max-w-sm cursor-pointer items-center gap-3 rounded-xl bg-white px-3.5 py-2 text-sm text-slate-400 ring-1 ring-slate-200 transition hover:ring-slate-300 dark:bg-white/5 dark:ring-white/10 dark:hover:ring-white/20 max-sm:w-auto max-sm:ring-0 max-sm:bg-transparent">
+                  class="ml-auto flex w-full max-w-sm cursor-pointer items-center gap-3 rounded-xl bg-white px-3.5 py-2 text-sm text-slate-400 ring-1 ring-slate-200 transition hover:ring-slate-300 max-sm:w-auto max-sm:ring-0 max-sm:bg-transparent">
             <%= icon :search, class: "size-4" %>
             <span class="max-sm:hidden">Buscar alunos, turmas, simulados…</span>
             <span class="ml-auto flex gap-1 max-sm:hidden"><kbd class="kbd">Ctrl</kbd><kbd class="kbd">K</kbd></span>
-          </button>
-
-          <button type="button" data-action="theme#toggle" class="btn btn-ghost btn-icon" title="Alternar tema claro/escuro">
-            <%= icon :moon, class: "size-5 dark:hidden" %><%= icon :sun, class: "hidden size-5 dark:block" %>
           </button>
         </div>
       </header>
@@ -100,7 +81,7 @@
     <div id="toasts" class="pointer-events-none fixed right-4 bottom-4 z-50 flex w-full max-w-sm flex-col gap-3">
       <% { notice: :check_circle, alert: :alert }.each do |type, icon_name| %>
         <% if (message = flash[type]) %>
-          <div data-controller="toast" class="pointer-events-auto relative flex animate-toast-in overflow-hidden items-start gap-3 rounded-2xl bg-white p-4 shadow-2xl shadow-navy-900/15 ring-1 ring-slate-200 dark:bg-navy-900 dark:ring-white/10">
+          <div data-controller="toast" class="pointer-events-auto relative flex animate-toast-in overflow-hidden items-start gap-3 rounded-2xl bg-white p-4 shadow-2xl shadow-navy-900/15 ring-1 ring-slate-200">
             <span class="<%= type == :notice ? 'text-green-500' : 'text-red-500' %>"><%= icon icon_name %></span>
             <p class="flex-1 text-sm font-medium"><%= message %></p>
             <button type="button" data-action="toast#dismiss" class="text-slate-400 hover:text-slate-600" aria-label="Fechar"><%= icon :x, class: "size-4" %></button>

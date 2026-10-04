@@ -1,0 +1,16 @@
+<% if sheet.pending? || sheet.processing? %>
+  <span class="badge badge-navy">
+    <svg class="size-3 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+    <%= sheet.pending? ? "Na fila" : "Lendo…" %>
+  </span>
+<% elsif sheet.failed? %>
+  <span class="badge bg-red-50 text-red-700 ring-1 ring-red-200" title="<%= sheet.error_message %>"><%= icon :x, class: "size-3" %> Não lido</span>
+  <p class="mt-1 max-w-xs text-xs text-red-600"><%= sheet.error_message %></p>
+<% elsif sheet.reviewed? %>
+  <span class="badge badge-green"><%= icon :check, class: "size-3" %> Conferido</span>
+<% elsif sheet.needs_review? %>
+  <span class="badge badge-gold" title="<%= sheet.review_reasons.to_sentence %>"><%= icon :alert, class: "size-3" %> Revisar</span>
+  <p class="mt-1 max-w-xs text-xs text-gold-700"><%= sheet.review_reasons.to_sentence.upcase_first %></p>
+<% else %>
+  <span class="badge badge-green"><%= icon :check_circle, class: "size-3" %> Corrigido</span>
+<% end %>

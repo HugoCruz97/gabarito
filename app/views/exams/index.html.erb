@@ -13,7 +13,7 @@
   </div>
 <% else %>
   <%= empty_state :exams, "Nenhum simulado ainda",
-        "Defina as matérias, quantas questões cada uma tem e quanto vale cada questão. O gabarito é montado automaticamente." do %>
+        "Escolha as matérias e quantas questões cada uma tem. Cada matéria vale 10 pontos e o gabarito é montado automaticamente." do %>
     <%= link_to new_exam_path, class: "btn btn-primary" do %><%= icon :plus %> Criar primeiro simulado<% end %>
   <% end %>
 <% end %>

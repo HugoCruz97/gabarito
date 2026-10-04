@@ -14,7 +14,7 @@
           <% students.each do |student| %>
             <tr class="group">
               <td>
-                <%= link_to student, class: "flex items-center gap-3 font-semibold text-navy-900 hover:text-green-700 dark:text-white dark:hover:text-green-300", data: { turbo_frame: "_top" } do %>
+                <%= link_to student, class: "flex items-center gap-3 font-semibold text-navy-900 hover:text-green-700", data: { turbo_frame: "_top" } do %>
                   <%= avatar(student.name) %> <%= student.name %>
                 <% end %>
               </td>

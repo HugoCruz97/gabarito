@@ -11,7 +11,7 @@
   <% end %>
 
   <% if @subjects.any? %>
-    <ul class="card divide-y divide-slate-100 overflow-hidden dark:divide-white/5">
+    <ul class="card divide-y divide-slate-100 overflow-hidden">
       <% @subjects.each do |subject| %>
         <li><%= render subject %></li>
       <% end %>

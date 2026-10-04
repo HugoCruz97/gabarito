@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-/* Modo escuro controlado pela classe .dark no <html> (theme_controller.js) */
-@custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
    Paleta Colégio Metaverso
@@ -69,10 +67,9 @@
     font-feature-settings: "cv11", "ss01";
     color-scheme: light;
   }
-  html.dark { color-scheme: dark; }
 
   body {
-    @apply bg-slate-50 text-slate-800 dark:bg-navy-950 dark:text-slate-200;
+    @apply bg-slate-50 text-slate-800;
   }
 
   ::selection { @apply bg-green-200 text-navy-900; }
@@ -95,67 +92,56 @@
   .btn svg { @apply size-4 shrink-0; }
   .btn-primary {
     @apply bg-gradient-to-br from-navy-700 to-navy-900 text-white shadow-lg shadow-navy-900/20
-           hover:from-navy-600 hover:to-navy-800 hover:shadow-navy-900/30
-           dark:from-green-500 dark:to-green-700 dark:shadow-green-900/30 dark:hover:from-green-400 dark:hover:to-green-600;
+           hover:from-navy-600 hover:to-navy-800 hover:shadow-navy-900/30;
   }
   .btn-accent {
     @apply bg-gradient-to-br from-green-500 to-green-700 text-white shadow-lg shadow-green-700/25 hover:from-green-400 hover:to-green-600;
   }
   .btn-secondary {
-    @apply bg-white text-slate-700 ring-1 ring-slate-200 ring-inset shadow-sm hover:bg-slate-50 hover:ring-slate-300
-           dark:bg-white/5 dark:text-slate-200 dark:ring-white/10 dark:hover:bg-white/10;
+    @apply bg-white text-slate-700 ring-1 ring-slate-200 ring-inset shadow-sm hover:bg-slate-50 hover:ring-slate-300;
   }
   .btn-ghost {
-    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white;
+    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900;
   }
   .btn-danger {
-    @apply text-red-600 ring-1 ring-red-200 ring-inset hover:bg-red-50 dark:text-red-400 dark:ring-red-500/30 dark:hover:bg-red-500/10;
+    @apply text-red-600 ring-1 ring-red-200 ring-inset hover:bg-red-50;
   }
   .btn-sm { @apply rounded-lg px-3 py-1.5 text-xs; }
   .btn-icon { @apply size-9 p-0; }
 
   /* ---------- Cartões ---------- */
   .card {
-    @apply rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-[0_1px_3px_rgba(16,24,64,0.04),0_8px_24px_-12px_rgba(16,24,64,0.08)]
-           dark:bg-navy-900/60 dark:ring-white/[0.07] dark:shadow-none;
+    @apply rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-[0_1px_3px_rgba(16,24,64,0.04),0_8px_24px_-12px_rgba(16,24,64,0.08)];
   }
   .card-hover {
-    @apply transition-all duration-200 hover:-translate-y-0.5 hover:ring-navy-200 hover:shadow-[0_12px_32px_-12px_rgba(28,45,97,0.25)]
-           dark:hover:ring-green-500/30;
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:ring-navy-200 hover:shadow-[0_12px_32px_-12px_rgba(28,45,97,0.25)];
   }
 
   /* ---------- Formulários ---------- */
-  .label { @apply mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300; }
-  .hint { @apply mt-1.5 text-xs text-slate-500 dark:text-slate-400; }
+  .label { @apply mb-1.5 block text-sm font-semibold text-slate-700; }
+  .hint { @apply mt-1.5 text-xs text-slate-500; }
   .input {
     @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-slate-200 ring-inset
-           placeholder:text-slate-400 transition focus:ring-2 focus:ring-green-500 focus:outline-none
-           dark:bg-white/5 dark:text-white dark:ring-white/10 dark:placeholder:text-slate-500 dark:focus:ring-green-400;
+           placeholder:text-slate-400 transition focus:ring-2 focus:ring-green-500 focus:outline-none;
   }
   select.input { @apply pr-9; }
-  /* A lista aberta do <select> é desenhada pelo sistema e não herda o fundo
-     translúcido do campo: sem isto, no modo escuro fica texto branco em fundo branco */
-  select option,
-  select optgroup { @apply bg-white text-slate-900; }
-  .dark select option,
-  .dark select optgroup { @apply bg-navy-900 text-slate-100; }
   .checkbox {
     @apply size-4 cursor-pointer rounded border-slate-300 text-green-600 accent-green-600 focus:ring-green-500;
   }
 
   /* ---------- Badges ---------- */
   .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
-  .badge-navy { @apply bg-navy-50 text-navy-700 ring-1 ring-navy-100 ring-inset dark:bg-navy-400/10 dark:text-navy-200 dark:ring-navy-400/20; }
-  .badge-green { @apply bg-green-50 text-green-700 ring-1 ring-green-100 ring-inset dark:bg-green-400/10 dark:text-green-300 dark:ring-green-400/20; }
-  .badge-gold { @apply bg-gold-50 text-gold-700 ring-1 ring-gold-100 ring-inset dark:bg-gold-400/10 dark:text-gold-300 dark:ring-gold-400/20; }
-  .badge-slate { @apply bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400; }
+  .badge-navy { @apply bg-navy-50 text-navy-700 ring-1 ring-navy-100 ring-inset; }
+  .badge-green { @apply bg-green-50 text-green-700 ring-1 ring-green-100 ring-inset; }
+  .badge-gold { @apply bg-gold-50 text-gold-700 ring-1 ring-gold-100 ring-inset; }
+  .badge-slate { @apply bg-slate-100 text-slate-600; }
 
   /* ---------- Tabelas ---------- */
   .table { @apply min-w-full text-sm; }
   .table thead th {
-    @apply px-5 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase dark:text-slate-400;
+    @apply px-5 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase;
   }
-  .table tbody tr { @apply border-t border-slate-100 transition-colors hover:bg-slate-50/70 dark:border-white/5 dark:hover:bg-white/[0.03]; }
+  .table tbody tr { @apply border-t border-slate-100 transition-colors hover:bg-slate-50/70; }
   .table td { @apply px-5 py-3.5; }
 
   /* ---------- Navegação lateral ---------- */
@@ -171,7 +157,7 @@
 
   .kbd {
     @apply inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-1.5
-           font-sans text-[11px] font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400;
+           font-sans text-[11px] font-semibold text-slate-500;
   }
 
   /* Bolinhas do gabarito (parecem as do cartão-resposta) */
@@ -180,14 +166,11 @@
            transition-all duration-150 select-none hover:ring-navy-300 hover:text-navy-700
            peer-checked:scale-105 peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800 peer-checked:shadow-md peer-checked:shadow-navy-900/30
            peer-focus-visible:ring-2 peer-focus-visible:ring-green-500
-           peer-disabled:opacity-35 peer-disabled:hover:text-slate-500 peer-disabled:hover:ring-slate-200
-           dark:peer-disabled:hover:text-slate-400 dark:peer-disabled:hover:ring-white/15
-           dark:text-slate-400 dark:ring-white/15 dark:hover:ring-green-400 dark:hover:text-white
-           dark:peer-checked:bg-green-500 dark:peer-checked:ring-green-500;
+           peer-disabled:opacity-35 peer-disabled:hover:text-slate-500 peer-disabled:hover:ring-slate-200;
   }
 
   .gradient-brand { @apply bg-gradient-to-br from-green-400 via-green-600 to-navy-800; }
-  .text-gradient-brand { @apply bg-gradient-to-r from-green-500 to-navy-700 bg-clip-text text-transparent dark:from-green-300 dark:to-navy-200; }
+  .text-gradient-brand { @apply bg-gradient-to-r from-green-500 to-navy-700 bg-clip-text text-transparent; }
 }
 
 /* Diálogo nativo (<dialog>) com fundo desfocado */

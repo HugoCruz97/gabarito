@@ -23,6 +23,7 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       LISTEN_FORCE_POLLING: "1"
+      OMR_URL: http://omr:8000
     volumes:
       - .:/app
       - bundle:/usr/local/bundle
@@ -31,8 +32,21 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      omr:
+        condition: service_started
     tty: true
     stdin_open: true
+
+  # Leitor de cartões-resposta (Python + OpenCV). Veja omr/README.md
+  omr:
+    build: ./omr
+    command: uvicorn omr.server:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      WATCHFILES_FORCE_POLLING: "true"
+    volumes:
+      - ./omr:/omr
+    ports:
+      - "8000:8000"
 
 volumes:
   pgdata:

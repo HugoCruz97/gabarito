@@ -1,6 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import Sortable from "sortablejs"
 
+const SUBJECT_POINTS = 10 // mesmo valor de ExamSubject::POINTS
+
 // Formulário de simulado: adiciona, remove e reordena matérias (arrastando)
 // e mostra os totais e a composição da nota ao vivo.
 export default class extends Controller {
@@ -53,10 +55,11 @@ export default class extends Controller {
     this.visibleRows.forEach((row, index) => {
       const field = (name) => row.querySelector(`[data-exam-form-target='${name}']`)
       const count = parseInt(field("count").value) || 0
-      const points = parseFloat(field("points").value) || 0
       const select = field("subject")
-      const subtotal = count * points
+      // Cada matéria vale SUBJECT_POINTS, divididos igualmente entre as questões
+      const subtotal = count > 0 ? SUBJECT_POINTS : 0
 
+      field("perQuestion").textContent = count > 0 ? this.format(SUBJECT_POINTS / count) : "—"
       field("subtotal").textContent = this.format(subtotal)
       field("position").value = index
       totalQuestions += count

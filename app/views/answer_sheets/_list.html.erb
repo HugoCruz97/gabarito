@@ -1,0 +1,108 @@
+<%# Cartões do simulado. Atualiza sozinho (turbo_stream_from @exam na página) enquanto o leitor trabalha. %>
+<% sheets = exam.answer_sheets.includes(:student, :answers).by_student_name.to_a %>
+<% questions = exam.questions.includes(:exam_subject).to_a %>
+<% subjects = exam.exam_subjects.includes(:subject).to_a %>
+<% graded = sheets.select(&:graded?) %>
+<% to_review = graded.select { |s| s.read? && s.needs_review? } %>
+<% reading = sheets.count { |s| s.pending? || s.processing? } %>
+<% failed = sheets.count(&:failed?) %>
+
+<section id="cartoes" class="mt-8 scroll-mt-24">
+  <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 class="text-xl font-extrabold tracking-tight text-navy-900">Cartões e notas</h2>
+      <p class="text-sm text-slate-500"><%= pluralize(sheets.size, "cartão enviado", plural: "cartões enviados") %></p>
+    </div>
+    <% if sheets.any? %>
+      <%= link_to new_exam_answer_sheet_path(exam), class: "btn btn-primary" do %><%= icon :plus %> Enviar mais cartões<% end %>
+    <% end %>
+  </div>
+
+  <% if sheets.empty? %>
+    <%= empty_state :scan, "Nenhum cartão enviado ainda",
+          "Tire fotos dos cartões-resposta preenchidos e envie aqui. O sistema lê as marcações e calcula as notas por matéria." do %>
+      <%= link_to new_exam_answer_sheet_path(exam), class: "btn btn-primary" do %><%= icon :plus %> Enviar cartões<% end %>
+    <% end %>
+  <% else %>
+    <%# ---------- Resumo ---------- %>
+    <div class="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <% average = graded.any? ? graded.sum { |s| s.score.to_d } / graded.size : nil %>
+      <% [
+           [ "Corrigidos", graded.size - to_review.size, "text-green-600", :check_circle ],
+           [ "Para revisar", to_review.size, "text-gold-600", :alert ],
+           [ "Em leitura", reading, "text-navy-600", :scan ],
+           [ "Média geral", average ? points(average.round(2)) : "—", "text-navy-900", :target ]
+         ].each do |label, value, color, icon_name| %>
+        <div class="card flex items-center gap-3 p-4">
+          <span class="<%= color %>"><%= icon icon_name %></span>
+          <div>
+            <p class="text-xl font-extrabold tabular-nums <%= color %>"><%= value %></p>
+            <p class="text-xs text-slate-500"><%= label %></p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if failed.positive? %>
+      <p class="mb-4 flex items-center gap-2 rounded-2xl bg-red-50 p-3 text-sm text-red-700 ring-1 ring-red-200">
+        <%= icon :alert, class: "size-4" %> <%= pluralize(failed, "cartão não pôde", plural: "cartões não puderam") %> ser lido(s). Veja o motivo na lista e tente outra foto.
+      </p>
+    <% end %>
+
+    <%# ---------- Tabela ---------- %>
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Aluno</th>
+              <th>Situação</th>
+              <% subjects.each do |es| %>
+                <th class="!text-right whitespace-nowrap" title="<%= es.subject.name %>">
+                  <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full" style="background: <%= subject_color(es.subject) %>"></span><%= es.subject.name.truncate(12) %></span>
+                </th>
+              <% end %>
+              <th class="!text-right">Total</th>
+              <th class="w-24"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sheets.each do |sheet| %>
+              <% by_subject = sheet.graded? ? sheet.score_by_subject(questions) : {} %>
+              <tr class="group">
+                <td>
+                  <% if sheet.student %>
+                    <span class="flex items-center gap-3 font-semibold text-navy-900"><%= avatar(sheet.student.name, size: "size-8 text-[11px]") %> <%= sheet.student.name %></span>
+                  <% else %>
+                    <span class="flex items-center gap-3 text-slate-400 italic"><span class="flex size-8 items-center justify-center rounded-full bg-slate-100"><%= icon :students, class: "size-4" %></span> Aluno não informado</span>
+                  <% end %>
+                </td>
+                <td><%= render "answer_sheets/status", sheet: sheet %></td>
+                <% subjects.each do |es| %>
+                  <td class="text-right tabular-nums text-slate-600"><%= by_subject.key?(es) ? points(by_subject[es].round(2)) : "—" %></td>
+                <% end %>
+                <td class="text-right">
+                  <span class="text-base font-extrabold tabular-nums <%= sheet.graded? ? 'text-navy-900' : 'text-slate-300' %>"><%= sheet.graded? ? points(sheet.score) : "—" %></span>
+                </td>
+                <td class="text-right whitespace-nowrap">
+                  <% if sheet.graded? %>
+                    <%= link_to exam_answer_sheet_path(exam, sheet), class: "btn btn-sm #{sheet.read? && sheet.needs_review? ? 'btn-primary' : 'btn-secondary'}" do %>
+                      <%= sheet.read? && sheet.needs_review? ? "Revisar" : "Ver" %>
+                    <% end %>
+                  <% elsif sheet.failed? %>
+                    <%= button_to reprocess_exam_answer_sheet_path(exam, sheet), class: "btn btn-secondary btn-sm", form_class: "inline" do %>Tentar de novo<% end %>
+                  <% end %>
+                  <%= button_to exam_answer_sheet_path(exam, sheet), method: :delete, form_class: "inline",
+                        class: "btn btn-ghost btn-icon btn-sm text-slate-400 opacity-0 transition group-hover:opacity-100 focus:opacity-100 hover:!text-red-600",
+                        title: "Excluir cartão", form: { data: { turbo_confirm: "O cartão #{sheet.student ? "de #{sheet.student.name}" : 'sem aluno'} será excluído." } } do %>
+                    <%= icon :trash, class: "size-4" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</section>

@@ -1,4 +1,4 @@
-<%= tag.div class: "group grid grid-cols-12 items-center gap-3 rounded-xl bg-slate-50 p-2 ring-1 ring-transparent transition hover:ring-slate-200 dark:bg-white/[0.03] dark:hover:ring-white/10",
+<%= tag.div class: "group grid grid-cols-12 items-center gap-3 rounded-xl bg-slate-50 p-2 ring-1 ring-transparent transition hover:ring-slate-200",
       hidden: f.object.marked_for_destruction?, data: { exam_form_target: "row" } do %>
   <%= f.hidden_field :id if f.object.persisted? %>
   <%= f.hidden_field :_destroy, data: { exam_form_target: "destroy" } %>
@@ -14,23 +14,23 @@
           aria: { label: "Quantidade de questões" },
           data: { exam_form_target: "count", action: "input->exam-form#recalculate" } %>
   </div>
-  <div class="col-span-4 md:col-span-2">
-    <%= f.number_field :points_per_question, min: 0, step: 0.01, placeholder: "Valor", class: "input tabular-nums",
-          aria: { label: "Valor por questão" },
-          data: { exam_form_target: "points", action: "input->exam-form#recalculate" } %>
+  <%# Valor por questão é calculado: 10 pontos ÷ quantidade de questões %>
+  <div class="col-span-4 md:col-span-2" title="10 pontos ÷ quantidade de questões">
+    <span class="block rounded-xl bg-white/60 px-3.5 py-2.5 text-sm text-slate-600 tabular-nums ring-1 ring-slate-200/70 ring-inset"
+          data-exam-form-target="perQuestion">—</span>
   </div>
-  <div class="col-span-2 font-semibold text-navy-900 tabular-nums dark:text-white" data-exam-form-target="subtotal">0</div>
+  <div class="col-span-2 font-semibold text-navy-900 tabular-nums" data-exam-form-target="subtotal">0</div>
   <div class="order-last col-span-12 pl-8">
-    <label class="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-500 select-none dark:text-slate-400"
+    <label class="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-500 select-none"
            title="A prova traz as duas línguas nestas questões; o aluno escolhe uma e marca no cartão">
       <%= f.check_box :foreign_language, class: "peer sr-only" %>
-      <span class="relative h-4 w-7 rounded-full bg-slate-200 transition peer-checked:bg-green-500 dark:bg-white/10
+      <span class="relative h-4 w-7 rounded-full bg-slate-200 transition peer-checked:bg-green-500
                    after:absolute after:top-0.5 after:left-0.5 after:size-3 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-3"></span>
       Língua estrangeira: <strong class="font-semibold">Inglês e Espanhol</strong> (2 gabaritos)
     </label>
   </div>
   <div class="col-span-2 text-right md:col-span-1">
-    <button type="button" data-action="exam-form#remove" class="btn btn-ghost btn-icon text-slate-400 hover:!bg-red-50 hover:!text-red-600 dark:hover:!bg-red-500/10" title="Remover matéria" aria-label="Remover matéria">
+    <button type="button" data-action="exam-form#remove" class="btn btn-ghost btn-icon text-slate-400 hover:!bg-red-50 hover:!text-red-600" title="Remover matéria" aria-label="Remover matéria">
       <%= icon :trash, class: "size-4" %>
     </button>
   </div>

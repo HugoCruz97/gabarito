@@ -12,7 +12,14 @@ Prova de conceito em Python + OpenCV. Lê a foto (celular) ou o scan de um cart�
    - `multiple`: duas ou mais (vale zero);
    - `doubtful`: marca fraca, rasura ou X → vai para revisão humana.
 
-## Uso
+## Serviço HTTP (usado pelo Rails)
+
+No `compose.yml` o container `omr` roda `uvicorn omr.server:app` na porta 8000:
+
+- `GET /health`: modelos disponíveis.
+- `POST /read` (multipart `image` + `template`): marcações em JSON + `overlay_jpeg_base64` (imagem de conferência). Responde 422 com `{ error }` quando a foto não pode ser lida.
+
+## Uso pela linha de comando
 
 ```bash
 docker build -t metaverso-omr omr

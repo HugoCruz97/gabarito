@@ -16,6 +16,7 @@ class AnswerKeysController < ApplicationController
         question.update!(changes)
       end
     end
+    @exam.regrade_answer_sheets!
     redirect_to @exam, notice: "Gabarito salvo."
   end
 

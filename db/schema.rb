@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_030950) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_121411) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -50,6 +50,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_030950) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "language"
+    t.string "error_message"
+    t.datetime "read_at"
+    t.index ["exam_id", "student_id"], name: "index_answer_sheets_on_exam_id_and_student_id", unique: true, where: "(student_id IS NOT NULL)"
     t.index ["exam_id"], name: "index_answer_sheets_on_exam_id"
     t.index ["student_id"], name: "index_answer_sheets_on_student_id"
   end
@@ -91,7 +94,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_030950) do
     t.bigint "subject_id", null: false
     t.integer "position", default: 0, null: false
     t.integer "questions_count", null: false
-    t.decimal "points_per_question", precision: 6, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "foreign_language", default: false, null: false
@@ -115,6 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_030950) do
     t.float "confidence"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "ok", null: false
     t.index ["answer_sheet_id", "exam_question_id"], name: "index_sheet_answers_on_answer_sheet_id_and_exam_question_id", unique: true
     t.index ["answer_sheet_id"], name: "index_sheet_answers_on_answer_sheet_id"
     t.index ["exam_question_id"], name: "index_sheet_answers_on_exam_question_id"

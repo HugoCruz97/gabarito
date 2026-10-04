@@ -28,6 +28,7 @@ class ExamsController < ApplicationController
 
   def update
     if @exam.update(exam_params)
+      @exam.regrade_answer_sheets!
       redirect_to @exam, notice: "Simulado atualizado."
     else
       render :edit, status: :unprocessable_entity
@@ -53,7 +54,7 @@ class ExamsController < ApplicationController
   def exam_params
     params.expect(exam: [
       :title, :applied_on, :options_count, classroom_ids: [],
-      exam_subjects_attributes: [ [ :id, :subject_id, :questions_count, :points_per_question, :position, :foreign_language, :_destroy ] ]
+      exam_subjects_attributes: [ [ :id, :subject_id, :questions_count, :position, :foreign_language, :_destroy ] ]
     ])
   end
 end

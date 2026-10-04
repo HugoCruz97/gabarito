@@ -1,6 +1,6 @@
 # Metaverso Simulados
 
-Plataforma para criar simulados escolares, cadastrar alunos e (em breve) corrigir cartões-resposta automaticamente.
+Plataforma para criar simulados escolares, cadastrar alunos e corrigir cartões-resposta automaticamente por foto.
 
 **Stack:** Ruby on Rails 8.1 · Hotwire (Turbo + Stimulus) · Tailwind CSS · PostgreSQL 17 · Docker
 
@@ -13,6 +13,10 @@ docker compose up
 ```
 
 Acesse http://localhost:3000. Na primeira vez, as gems são instaladas e o banco é criado automaticamente.
+
+Sobem três containers: `web` (Rails), `db` (PostgreSQL) e `omr` (leitor de cartões em Python, porta 8000).
+
+> Mudou `compose.yml` ou algo em `config/initializers`? Rode `docker compose up -d` (recria os containers). Um `restart` não aplica variáveis novas.
 
 ### Hot reload
 
@@ -43,10 +47,10 @@ docker compose down                            # parar tudo
 | `Student` | Alunos | Nome, matrícula (opcional), turma |
 | `Subject` | Matérias | Catálogo de matérias reutilizável |
 | `Exam` | Simulados | Título, data, turmas, alternativas (A–D ou A–E) |
-| `ExamSubject` | (no simulado) | Matéria + nº de questões + valor por questão + ordem |
+| `ExamSubject` | (no simulado) | Matéria + nº de questões + ordem. Vale 10 pontos; cada questão vale 10 ÷ nº de questões |
 | `ExamQuestion` | Gabarito | Gerada automaticamente; alternativa correta e anulação |
-| `AnswerSheet` | (em breve) | Cartão-resposta de um aluno (imagem + status + nota) |
-| `SheetAnswer` | (em breve) | Alternativa lida em cada questão + confiança da leitura |
+| `AnswerSheet` | Cartões e notas | Cartão de um aluno: foto, imagem de conferência, língua, status (fila → lendo → corrigido/revisar → conferido) e nota |
+| `SheetAnswer` | Revisão | Alternativa lida em cada questão, confiança e classificação (ok, em branco, múltipla, duvidosa, ajustada) |
 
 ### Regras de correção (`AnswerSheet#points_for`)
 
@@ -65,7 +69,7 @@ Cores tiradas do site do [Colégio Metaverso](https://colegiometaverso.com.br/),
 | `gold-400` | `#F8B81F` | Destaques |
 | `green-400` | `#31B978` | Degradê verde → azul do site |
 
-Fonte: Plus Jakarta Sans. Tem modo claro e escuro, que segue o sistema e pode ser trocado no botão de lua/sol.
+Fonte: Plus Jakarta Sans. Só tem tema claro.
 
 ## Recursos de interface
 
@@ -79,11 +83,21 @@ Fonte: Plus Jakarta Sans. Tem modo claro e escuro, que segue o sistema e pode se
 
 - **Turbo Frames:** edição de matéria na própria linha (`subjects/_subject`), filtro de alunos sem recarregar a página (`students/index`).
 - **Stimulus:** `exam_form_controller.js` (adicionar e remover matérias e mostrar os totais ao vivo), `auto_submit_controller.js` (busca enquanto digita).
-- **Turbo Streams:** serão usados para atualizar o status dos cartões em tempo real durante a leitura.
+- **Turbo Streams:** `AnswerSheet` usa `broadcasts_refreshes_to :exam`; a página do simulado (`turbo_stream_from @exam`) se atualiza sozinha enquanto os cartões são lidos.
+
+## Correção por foto
+
+1. Na página do simulado, **Enviar cartões**: escolha várias fotos e o aluno de cada uma.
+2. Cada foto vira um `AnswerSheet` e o `ReadAnswerSheetJob` envia ao serviço `omr` (`OmrClient`, HTTP).
+3. O leitor devolve as marcações e a imagem de conferência; o Rails grava as respostas e calcula a nota.
+4. A lista de cartões se atualiza sozinha (Turbo Streams). Cartões com dúvida aparecem como **Revisar**.
+5. Na revisão, a professora confere a imagem, ajusta marcações, aluno ou língua e confirma. O sistema já abre o próximo cartão a revisar.
+6. Mudou o gabarito ou o simulado? As notas já lançadas são recalculadas.
+
+O modelo de cartão fica em `config/initializers/omr.rb` e o PDF em `omr/templates/` (fora do Git).
 
 ## Próximos passos
 
-1. Prova de conceito da leitura óptica (Python + OpenCV) com o cartão real da escola.
-2. Upload de cartões em lote, com leitura em background (Solid Queue).
-3. Tela de revisão das marcações e cálculo das notas.
-4. Relatórios por turma e exportação para Excel/PDF.
+1. Validar o leitor com fotos reais de cartões preenchidos.
+2. Relatórios por turma e exportação para Excel/PDF.
+3. Envio de PDF escaneado com vários cartões de uma vez.

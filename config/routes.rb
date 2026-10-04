@@ -10,5 +10,8 @@ Rails.application.routes.draw do
 
   resources :exams do
     resource :answer_key, only: %i[edit update]
+    resources :answer_sheets, only: %i[new create show update destroy] do
+      post :reprocess, on: :member
+    end
   end
 end

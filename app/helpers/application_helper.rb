@@ -1,11 +1,11 @@
 module ApplicationHelper
   AVATAR_COLORS = %w[
-    bg-navy-100 text-navy-700 dark:bg-navy-400/15 dark:text-navy-200
-    bg-green-100 text-green-700 dark:bg-green-400/15 dark:text-green-300
-    bg-gold-100 text-gold-700 dark:bg-gold-400/15 dark:text-gold-300
-    bg-sky-100 text-sky-700 dark:bg-sky-400/15 dark:text-sky-300
-    bg-violet-100 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300
-    bg-rose-100 text-rose-700 dark:bg-rose-400/15 dark:text-rose-300
+    bg-navy-100 text-navy-700
+    bg-green-100 text-green-700
+    bg-gold-100 text-gold-700
+    bg-sky-100 text-sky-700
+    bg-violet-100 text-violet-700
+    bg-rose-100 text-rose-700
   ].each_slice(4).map { |classes| classes.join(" ") }.freeze
 
   # Cores das matérias nos gráficos/chips: sempre as mesmas para a mesma matéria
