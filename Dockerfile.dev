@@ -1,0 +1,14 @@
+# Imagem de desenvolvimento (para produção use o Dockerfile gerado pelo Rails)
+FROM ruby:3.4.11
+
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential libpq-dev libvips postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+ENV BUNDLE_PATH=/usr/local/bundle
+
+RUN gem install foreman --no-document
+
+EXPOSE 3000
+CMD ["bin/dev"]

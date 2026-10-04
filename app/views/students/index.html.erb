@@ -1,0 +1,17 @@
+<% content_for :title, "Alunos" %>
+<%= render layout: "shared/page_header", locals: { title: "Alunos" } do %>
+  <%= link_to "Novo aluno", new_student_path(classroom_id: params[:classroom_id]), class: ApplicationHelper::BUTTON_CLASS %>
+<% end %>
+
+<%# Filtro com Turbo Frame: só a tabela é recarregada %>
+<%= form_with url: students_path, method: :get, class: "mb-4 flex flex-wrap gap-2",
+      data: { turbo_frame: "students", turbo_action: "advance", controller: "auto-submit" } do |f| %>
+  <%= f.search_field :q, value: params[:q], placeholder: "Buscar por nome…",
+        class: "#{ApplicationHelper::INPUT_CLASS} max-w-xs", data: { action: "input->auto-submit#submit" } %>
+  <%= f.select :classroom_id, options_from_collection_for_select(@classrooms, :id, :name, params[:classroom_id]),
+        { include_blank: "Todas as turmas" }, class: "#{ApplicationHelper::INPUT_CLASS} max-w-xs", data: { action: "change->auto-submit#submit" } %>
+<% end %>
+
+<%= turbo_frame_tag "students", target: "_top" do %>
+  <%= render "table", students: @students, show_classroom: true %>
+<% end %>

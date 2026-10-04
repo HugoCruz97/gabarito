@@ -1,0 +1,9 @@
+<% content_for :title, @classroom.name %>
+<%= render layout: "shared/page_header", locals: { title: @classroom.display_name, subtitle: pluralize(@classroom.students.size, "aluno") } do %>
+  <%= link_to "Adicionar aluno", new_student_path(classroom_id: @classroom.id), class: ApplicationHelper::BUTTON_CLASS %>
+  <%= link_to "Editar", edit_classroom_path(@classroom), class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
+  <%= button_to "Excluir", @classroom, method: :delete, class: ApplicationHelper::DANGER_BUTTON_CLASS,
+        form: { data: { turbo_confirm: "Excluir a turma #{@classroom.name}?" } } %>
+<% end %>
+
+<%= render "students/table", students: @classroom.students, show_classroom: false %>

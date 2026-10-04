@@ -1,0 +1,40 @@
+pt-BR:
+  activerecord:
+    models:
+      classroom: { one: Turma, other: Turmas }
+      student: { one: Aluno, other: Alunos }
+      subject: { one: Matéria, other: Matérias }
+      exam: { one: Simulado, other: Simulados }
+      exam_subject: { one: Matéria do simulado, other: Matérias do simulado }
+      exam_question: { one: Questão, other: Questões }
+      answer_sheet: { one: Cartão-resposta, other: Cartões-resposta }
+    attributes:
+      classroom:
+        name: Nome
+        school_year: Ano letivo
+        students: Alunos
+      student:
+        name: Nome
+        registration_number: Matrícula
+        classroom: Turma
+        answer_sheets: Cartões-resposta
+      subject:
+        name: Nome
+        exam_subjects: Simulados
+      exam:
+        title: Título
+        applied_on: Data de aplicação
+        options_count: Alternativas por questão
+        classrooms: Turmas
+        exam_subjects: Matérias
+      exam_subject:
+        subject: Matéria
+        questions_count: Quantidade de questões
+        points_per_question: Valor por questão
+      exam/exam_subjects:
+        subject: Matéria
+        questions_count: Quantidade de questões
+        points_per_question: Valor por questão
+      exam_question:
+        correct_option: Alternativa correta
+        annulled: Anulada

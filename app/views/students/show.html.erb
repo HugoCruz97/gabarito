@@ -1,0 +1,8 @@
+<% content_for :title, @student.name %>
+<%= render layout: "shared/page_header", locals: { title: @student.name, subtitle: "#{@student.classroom.display_name} · Matrícula: #{@student.registration_number || '—'}" } do %>
+  <%= link_to "Editar", edit_student_path(@student), class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
+  <%= button_to "Excluir", @student, method: :delete, class: ApplicationHelper::DANGER_BUTTON_CLASS,
+        form: { data: { turbo_confirm: "Excluir #{@student.name}?" } } %>
+<% end %>
+
+<p class="text-gray-500">As notas dos simulados deste aluno aparecerão aqui.</p>

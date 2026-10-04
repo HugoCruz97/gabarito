@@ -1,0 +1,11 @@
+<%# Turbo Frame: "Editar" troca só esta linha pelo formulário %>
+<%= turbo_frame_tag subject do %>
+  <div class="flex items-center justify-between px-4 py-3">
+    <span><%= subject.name %></span>
+    <div class="flex gap-3 text-sm">
+      <%= link_to "Editar", edit_subject_path(subject), class: "text-indigo-700 hover:underline" %>
+      <%= button_to "Excluir", subject, method: :delete, class: "text-red-600 hover:underline cursor-pointer",
+            form: { data: { turbo_confirm: "Excluir #{subject.name}?", turbo_frame: "_top" } } %>
+    </div>
+  </div>
+<% end %>

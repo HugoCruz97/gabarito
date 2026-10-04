@@ -1,0 +1,10 @@
+<%= turbo_frame_tag @subject do %>
+  <%= form_with model: @subject, class: "flex items-center gap-2 px-4 py-2", data: { turbo_frame: "_top" } do |f| %>
+    <%= f.text_field :name, autofocus: true, class: ApplicationHelper::INPUT_CLASS %>
+    <%= f.submit "Salvar", class: ApplicationHelper::BUTTON_CLASS %>
+    <%= link_to "Cancelar", subjects_path, class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
+  <% end %>
+  <% if @subject.errors.any? %>
+    <p class="px-4 pb-2 text-sm text-red-600"><%= @subject.errors.full_messages.to_sentence %></p>
+  <% end %>
+<% end %>

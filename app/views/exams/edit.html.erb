@@ -1,0 +1,6 @@
+<% content_for :title, "Editar simulado" %>
+<h1 class="mb-6 text-2xl font-bold">Editar simulado</h1>
+<p class="mb-6 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
+  Ao mudar a ordem ou a quantidade de questões, a numeração é refeita. O gabarito já preenchido de cada matéria é mantido.
+</p>
+<%= render "form", exam: @exam %>

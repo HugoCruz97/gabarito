@@ -1,0 +1,25 @@
+<%= tag.div class: "grid grid-cols-12 items-center gap-3 rounded-md bg-gray-50 p-3 md:bg-transparent md:p-0",
+      hidden: f.object.marked_for_destruction?, data: { exam_form_target: "row" } do %>
+  <%= f.hidden_field :id if f.object.persisted? %>
+  <%= f.hidden_field :_destroy, data: { exam_form_target: "destroy" } %>
+  <%= f.hidden_field :position, data: { exam_form_target: "position" } %>
+
+  <div class="col-span-12 md:col-span-5">
+    <%= f.collection_select :subject_id, @subjects, :id, :name, { include_blank: "Selecione a matéria…" },
+          class: ApplicationHelper::INPUT_CLASS, aria: { label: "Matéria" } %>
+  </div>
+  <div class="col-span-4 md:col-span-2">
+    <%= f.number_field :questions_count, min: 1, max: 200, placeholder: "Qtd.", class: ApplicationHelper::INPUT_CLASS,
+          aria: { label: "Quantidade de questões" },
+          data: { exam_form_target: "count", action: "input->exam-form#recalculate" } %>
+  </div>
+  <div class="col-span-4 md:col-span-2">
+    <%= f.number_field :points_per_question, min: 0, step: 0.01, placeholder: "Valor", class: ApplicationHelper::INPUT_CLASS,
+          aria: { label: "Valor por questão" },
+          data: { exam_form_target: "points", action: "input->exam-form#recalculate" } %>
+  </div>
+  <div class="col-span-2 text-sm text-gray-600" data-exam-form-target="subtotal">0</div>
+  <div class="col-span-2 text-right md:col-span-1">
+    <button type="button" data-action="exam-form#remove" class="cursor-pointer text-sm text-red-600 hover:underline">Remover</button>
+  </div>
+<% end %>

@@ -1,0 +1,52 @@
+<% content_for :title, @exam.title %>
+<% subtitle = [ (l(@exam.applied_on) if @exam.applied_on), @exam.classrooms.map(&:name).to_sentence.presence ].compact.join(" · ") %>
+<%= render layout: "shared/page_header", locals: { title: @exam.title, subtitle: subtitle } do %>
+  <%= link_to "Gabarito", edit_exam_answer_key_path(@exam), class: ApplicationHelper::BUTTON_CLASS %>
+  <%= link_to "Editar", edit_exam_path(@exam), class: ApplicationHelper::SECONDARY_BUTTON_CLASS %>
+  <%= button_to "Excluir", @exam, method: :delete, class: ApplicationHelper::DANGER_BUTTON_CLASS,
+        form: { data: { turbo_confirm: "Excluir o simulado #{@exam.title}? Todas as notas serão perdidas." } } %>
+<% end %>
+
+<% unless @exam.answer_key_complete? %>
+  <p class="mb-6 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
+    O gabarito ainda está incompleto. <%= link_to "Preencher gabarito", edit_exam_answer_key_path(@exam), class: "font-medium underline" %>
+  </p>
+<% end %>
+
+<div class="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
+  <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <thead class="bg-gray-50 text-left text-gray-600">
+      <tr>
+        <th class="px-4 py-3 font-medium">Matéria</th>
+        <th class="px-4 py-3 font-medium">Questões</th>
+        <th class="px-4 py-3 text-right font-medium">Valor cada</th>
+        <th class="px-4 py-3 text-right font-medium">Total</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @exam.exam_subjects.includes(:subject, :questions).each do |exam_subject| %>
+        <tr>
+          <td class="px-4 py-3 font-medium"><%= exam_subject.subject.name %></td>
+          <td class="px-4 py-3 text-gray-600">
+            <%= exam_subject.questions.first&.number %>–<%= exam_subject.questions.last&.number %>
+            (<%= exam_subject.questions_count %>)
+          </td>
+          <td class="px-4 py-3 text-right"><%= points(exam_subject.points_per_question) %></td>
+          <td class="px-4 py-3 text-right"><%= points(exam_subject.total_points) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot class="bg-gray-50 font-semibold">
+      <tr>
+        <td class="px-4 py-3">Total</td>
+        <td class="px-4 py-3"><%= @exam.total_questions %></td>
+        <td></td>
+        <td class="px-4 py-3 text-right"><%= points(@exam.total_points) %></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<section class="mt-8 rounded-lg border border-dashed border-gray-300 p-6 text-center text-gray-500">
+  Cartões-resposta: em breve, aqui você vai enviar as imagens e ver as notas dos alunos.
+</section>
