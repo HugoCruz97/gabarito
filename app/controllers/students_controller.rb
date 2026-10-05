@@ -54,6 +54,6 @@ class StudentsController < ApplicationController
   end
 
   def student_params
-    params.expect(student: %i[name registration_number classroom_id])
+    params.expect(student: %i[name registration_number classroom_id adapted])
   end
 end

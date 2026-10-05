@@ -3,9 +3,12 @@ require "test_helper"
 class AnswerSheetReadingTest < ActiveSupport::TestCase
   # Leitor falso: devolve um resultado fixo ou levanta um erro
   class FakeClient
+    attr_reader :received
+
     def initialize(result: nil, error: nil) = (@result, @error = result, error)
 
-    def read(_io, filename:, template:)
+    def read(_io, filename:, questions:, options:, template: nil)
+      @received = { questions: questions, options: options }
       raise @error if @error
 
       @result
@@ -94,10 +97,9 @@ class AnswerSheetReadingTest < ActiveSupport::TestCase
     assert_includes dup.errors[:student_id], "já tem um cartão neste simulado"
   end
 
-  test "simulado com mais questões que o cartão não aceita envio" do
-    big = Exam.create!(title: "Grande", exam_subjects_attributes: [ { subject_id: Subject.first.id, questions_count: 41 } ])
-    sheet = big.answer_sheets.new(image: sheet_image)
-    assert_not sheet.valid?
-    assert_includes sheet.errors[:base], "O simulado tem 41 questões, mas o cartão-resposta só tem 40"
+  test "informa ao leitor quantas questões e alternativas o simulado tem" do
+    client = FakeClient.new(result: reading)
+    @sheet.read_with_omr!(client)
+    assert_equal({ questions: 4, options: 5 }, client.received)
   end
 end

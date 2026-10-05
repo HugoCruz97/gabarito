@@ -1,47 +1,51 @@
 @import "tailwindcss";
 
-
 /* ============================================================
-   Paleta Colégio Metaverso
-   navy  #1C2D61 (primária)  · green #006C21 (secundária)
-   gold  #F8B81F (destaque)  · degradê verde → azul do site
+   Paleta: cinza, bege e marrom
+   cocoa   marrom escuro  — primária (menu, botões, títulos)
+   caramel marrom quente  — destaques e ações
+   sand    bege           — detalhes, avisos, fundo creme
+   stone   cinza quente   — textos e neutros (padrão do Tailwind)
    ============================================================ */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --color-navy-50: #eef2fa;
-  --color-navy-100: #d9e1f3;
-  --color-navy-200: #b5c4e6;
-  --color-navy-300: #8ba0d3;
-  --color-navy-400: #5f78b9;
-  --color-navy-500: #41589d;
-  --color-navy-600: #2f4381;
-  --color-navy-700: #24366f;
-  --color-navy-800: #1c2d61;
-  --color-navy-900: #15214a;
-  --color-navy-950: #0b1330;
+  --color-cocoa-50: #f7f3f0;
+  --color-cocoa-100: #ece3dc;
+  --color-cocoa-200: #d9c7b8;
+  --color-cocoa-300: #c0a38c;
+  --color-cocoa-400: #a07f66;
+  --color-cocoa-500: #84644d;
+  --color-cocoa-600: #6b4f3d;
+  --color-cocoa-700: #563f32;
+  --color-cocoa-800: #43322a;
+  --color-cocoa-900: #2f241e;
+  --color-cocoa-950: #1c1512;
 
-  --color-green-50: #ebfaf0;
-  --color-green-100: #cff3db;
-  --color-green-200: #a0e6b9;
-  --color-green-300: #63d18f;
-  --color-green-400: #31b978;
-  --color-green-500: #10a04a;
-  --color-green-600: #008530;
-  --color-green-700: #006c21;
-  --color-green-800: #05561d;
-  --color-green-900: #07461a;
-  --color-green-950: #02270c;
+  --color-caramel-50: #fbf6ef;
+  --color-caramel-100: #f4e7d4;
+  --color-caramel-200: #e8cda6;
+  --color-caramel-300: #d9ad74;
+  --color-caramel-400: #c98f4d;
+  --color-caramel-500: #b57636;
+  --color-caramel-600: #985f2b;
+  --color-caramel-700: #7a4b25;
+  --color-caramel-800: #623d22;
+  --color-caramel-900: #4f331f;
+  --color-caramel-950: #2b1a0f;
 
-  --color-gold-50: #fef8e7;
-  --color-gold-100: #fdedc0;
-  --color-gold-200: #fcdf8a;
-  --color-gold-300: #fad055;
-  --color-gold-400: #f8b81f;
-  --color-gold-500: #e59e07;
-  --color-gold-600: #bf7a04;
-  --color-gold-700: #985b09;
+  --color-sand-50: #fbf9f4;
+  --color-sand-100: #f5efe2;
+  --color-sand-200: #ebdfc6;
+  --color-sand-300: #dcc9a3;
+  --color-sand-400: #ccb07f;
+  --color-sand-500: #bb9864;
+  --color-sand-600: #a17e50;
+  --color-sand-700: #836443;
+  --color-sand-800: #6b523a;
+  --color-sand-900: #584432;
+  --color-sand-950: #2f2419;
 
   --animate-fade-in: fade-in 0.25s ease-out both;
   --animate-slide-up: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -69,12 +73,12 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-800;
+    @apply bg-sand-50 text-stone-800;
   }
 
-  ::selection { @apply bg-green-200 text-navy-900; }
+  ::selection { @apply bg-caramel-200 text-cocoa-900; }
 
-  :focus-visible { @apply outline-2 outline-offset-2 outline-green-500; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-caramel-500; }
 
   /* Transição suave entre páginas (View Transitions API + Turbo) */
   ::view-transition-old(main),
@@ -91,17 +95,17 @@
   }
   .btn svg { @apply size-4 shrink-0; }
   .btn-primary {
-    @apply bg-gradient-to-br from-navy-700 to-navy-900 text-white shadow-lg shadow-navy-900/20
-           hover:from-navy-600 hover:to-navy-800 hover:shadow-navy-900/30;
+    @apply bg-gradient-to-br from-cocoa-700 to-cocoa-900 text-white shadow-lg shadow-cocoa-900/20
+           hover:from-cocoa-600 hover:to-cocoa-800 hover:shadow-cocoa-900/30;
   }
   .btn-accent {
-    @apply bg-gradient-to-br from-green-500 to-green-700 text-white shadow-lg shadow-green-700/25 hover:from-green-400 hover:to-green-600;
+    @apply bg-gradient-to-br from-caramel-500 to-caramel-700 text-white shadow-lg shadow-caramel-700/25 hover:from-caramel-400 hover:to-caramel-600;
   }
   .btn-secondary {
-    @apply bg-white text-slate-700 ring-1 ring-slate-200 ring-inset shadow-sm hover:bg-slate-50 hover:ring-slate-300;
+    @apply bg-white text-stone-700 ring-1 ring-stone-200 ring-inset shadow-sm hover:bg-stone-50 hover:ring-stone-300;
   }
   .btn-ghost {
-    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+    @apply text-stone-600 hover:bg-stone-100 hover:text-stone-900;
   }
   .btn-danger {
     @apply text-red-600 ring-1 ring-red-200 ring-inset hover:bg-red-50;
@@ -111,68 +115,75 @@
 
   /* ---------- Cartões ---------- */
   .card {
-    @apply rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-[0_1px_3px_rgba(16,24,64,0.04),0_8px_24px_-12px_rgba(16,24,64,0.08)];
+    @apply rounded-2xl bg-white ring-1 ring-stone-200/70 shadow-[0_1px_3px_rgba(47,36,30,0.05),0_8px_24px_-12px_rgba(47,36,30,0.10)];
   }
   .card-hover {
-    @apply transition-all duration-200 hover:-translate-y-0.5 hover:ring-navy-200 hover:shadow-[0_12px_32px_-12px_rgba(28,45,97,0.25)];
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:ring-cocoa-200 hover:shadow-[0_12px_32px_-12px_rgba(67,50,42,0.25)];
   }
 
   /* ---------- Formulários ---------- */
-  .label { @apply mb-1.5 block text-sm font-semibold text-slate-700; }
-  .hint { @apply mt-1.5 text-xs text-slate-500; }
+  .label { @apply mb-1.5 block text-sm font-semibold text-stone-700; }
+  .hint { @apply mt-1.5 text-xs text-stone-500; }
   .input {
-    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm ring-1 ring-slate-200 ring-inset
-           placeholder:text-slate-400 transition focus:ring-2 focus:ring-green-500 focus:outline-none;
+    @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-stone-900 shadow-sm ring-1 ring-stone-200 ring-inset
+           placeholder:text-stone-400 transition focus:ring-2 focus:ring-caramel-500 focus:outline-none;
   }
   select.input { @apply pr-9; }
   .checkbox {
-    @apply size-4 cursor-pointer rounded border-slate-300 text-green-600 accent-green-600 focus:ring-green-500;
+    @apply size-4 cursor-pointer rounded border-stone-300 text-caramel-600 accent-caramel-600 focus:ring-caramel-500;
   }
 
   /* ---------- Badges ---------- */
   .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold; }
-  .badge-navy { @apply bg-navy-50 text-navy-700 ring-1 ring-navy-100 ring-inset; }
-  .badge-green { @apply bg-green-50 text-green-700 ring-1 ring-green-100 ring-inset; }
-  .badge-gold { @apply bg-gold-50 text-gold-700 ring-1 ring-gold-100 ring-inset; }
-  .badge-slate { @apply bg-slate-100 text-slate-600; }
+  .badge-cocoa { @apply bg-cocoa-50 text-cocoa-700 ring-1 ring-cocoa-100 ring-inset; }
+  .badge-caramel { @apply bg-caramel-50 text-caramel-700 ring-1 ring-caramel-100 ring-inset; }
+  .badge-sand { @apply bg-sand-50 text-sand-700 ring-1 ring-sand-100 ring-inset; }
+  .badge-slate { @apply bg-stone-100 text-stone-600; }
 
   /* ---------- Tabelas ---------- */
   .table { @apply min-w-full text-sm; }
   .table thead th {
-    @apply px-5 py-3 text-left text-xs font-semibold tracking-wider text-slate-500 uppercase;
+    @apply px-5 py-3 text-left text-xs font-semibold tracking-wider text-stone-500 uppercase;
   }
-  .table tbody tr { @apply border-t border-slate-100 transition-colors hover:bg-slate-50/70; }
+  .table tbody tr { @apply border-t border-stone-100 transition-colors hover:bg-stone-50/70; }
   .table td { @apply px-5 py-3.5; }
 
   /* ---------- Navegação lateral ---------- */
   .nav-item {
-    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-navy-100/80 transition
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-cocoa-100/80 transition
            hover:bg-white/10 hover:text-white;
   }
   .nav-item svg { @apply size-5 shrink-0 opacity-80; }
   .nav-item[aria-current="page"] {
     @apply bg-white/[0.12] text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)];
   }
-  .nav-item[aria-current="page"] svg { @apply text-gold-400 opacity-100; }
+  .nav-item[aria-current="page"] svg { @apply text-sand-400 opacity-100; }
 
   .kbd {
-    @apply inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-slate-200 bg-slate-50 px-1.5
-           font-sans text-[11px] font-semibold text-slate-500;
+    @apply inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-stone-200 bg-stone-50 px-1.5
+           font-sans text-[11px] font-semibold text-stone-500;
   }
 
   /* Bolinhas do gabarito (parecem as do cartão-resposta) */
   .bubble {
-    @apply flex size-9 items-center justify-center rounded-full text-sm font-bold text-slate-500 ring-1 ring-slate-200 ring-inset
-           transition-all duration-150 select-none hover:ring-navy-300 hover:text-navy-700
-           peer-checked:scale-105 peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800 peer-checked:shadow-md peer-checked:shadow-navy-900/30
-           peer-focus-visible:ring-2 peer-focus-visible:ring-green-500
-           peer-disabled:opacity-35 peer-disabled:hover:text-slate-500 peer-disabled:hover:ring-slate-200;
+    @apply flex size-9 items-center justify-center rounded-full text-sm font-bold text-stone-500 ring-1 ring-stone-200 ring-inset
+           transition-all duration-150 select-none hover:ring-cocoa-300 hover:text-cocoa-700
+           peer-checked:scale-105 peer-checked:bg-cocoa-800 peer-checked:text-white peer-checked:ring-cocoa-800 peer-checked:shadow-md peer-checked:shadow-cocoa-900/30
+           peer-focus-visible:ring-2 peer-focus-visible:ring-caramel-500
+           peer-disabled:opacity-35 peer-disabled:hover:text-stone-500 peer-disabled:hover:ring-stone-200;
   }
 
-  .gradient-brand { @apply bg-gradient-to-br from-green-400 via-green-600 to-navy-800; }
-  .text-gradient-brand { @apply bg-gradient-to-r from-green-500 to-navy-700 bg-clip-text text-transparent; }
+  .gradient-brand { @apply bg-gradient-to-br from-caramel-400 via-caramel-600 to-cocoa-800; }
+  .text-gradient-brand { @apply bg-gradient-to-r from-caramel-500 to-cocoa-700 bg-clip-text text-transparent; }
 }
 
 /* Diálogo nativo (<dialog>) com fundo desfocado */
-dialog::backdrop { @apply bg-navy-950/50 backdrop-blur-sm; }
+dialog::backdrop { @apply bg-cocoa-950/50 backdrop-blur-sm; }
 dialog[open] { @apply animate-slide-up; }
+
+/* Impressão / PDF (relatório de notas): fundo branco, sem animações e com cores preservadas */
+@media print {
+  @page { margin: 12mm; }
+  body { background: #fff; }
+  * { animation: none !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

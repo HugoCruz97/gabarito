@@ -53,7 +53,7 @@ class ExamsController < ApplicationController
 
   def exam_params
     params.expect(exam: [
-      :title, :applied_on, :options_count, classroom_ids: [],
+      :title, :applied_on, :options_count, :adapted_answer_key, classroom_ids: [],
       exam_subjects_attributes: [ [ :id, :subject_id, :questions_count, :position, :foreign_language, :_destroy ] ]
     ])
   end

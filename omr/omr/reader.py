@@ -50,21 +50,21 @@ def bubble_fill(photo: np.ndarray, blank: np.ndarray, x: float, y: float, r: flo
     return float(np.clip(best, 0, 1))
 
 
-def decide(number: int, fills: dict[str, float]) -> QuestionResult:
+def decide(number: int, fills: dict[str, float], marked_at: float = MARKED, doubtful_at: float = DOUBTFUL) -> QuestionResult:
     ranked = sorted(fills.items(), key=lambda kv: kv[1], reverse=True)
     (top, f1), (_, f2) = ranked[0], ranked[1]
-    marked = [o for o, f in ranked if f >= MARKED]
+    marked = [o for o, f in ranked if f >= marked_at]
 
     if len(marked) >= 2:
-        return QuestionResult(number, None, "multiple", round(min(1.0, f2 / MARKED), 2), fills)
+        return QuestionResult(number, None, "multiple", round(min(1.0, f2 / marked_at), 2), fills)
     if len(marked) == 1:
         # confiança: quão acima do limiar e quão acima da segunda colocada
-        margin = min((f1 - MARKED) / (1 - MARKED), (f1 - f2) / f1)
-        status = "doubtful" if f2 >= DOUBTFUL else "ok"
+        margin = min((f1 - marked_at) / (1 - marked_at), (f1 - f2) / f1)
+        status = "doubtful" if f2 >= doubtful_at else "ok"
         return QuestionResult(number, top, status, round(float(np.clip(0.5 + margin, 0, 1)), 2), fills)
-    if f1 >= DOUBTFUL:
-        return QuestionResult(number, top, "doubtful", round(f1 / MARKED * 0.5, 2), fills)
-    return QuestionResult(number, None, "blank", round(1 - f1 / DOUBTFUL * 0.5, 2), fills)
+    if f1 >= doubtful_at:
+        return QuestionResult(number, top, "doubtful", round(f1 / marked_at * 0.5, 2), fills)
+    return QuestionResult(number, None, "blank", round(1 - f1 / doubtful_at * 0.5, 2), fills)
 
 
 def answer_box(template: Template, pad: int = 30) -> tuple[int, int, int, int]:

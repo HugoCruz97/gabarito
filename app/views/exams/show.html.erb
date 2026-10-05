@@ -4,7 +4,7 @@
 <% total = @exam.total_points %>
 <% progress = @exam.answer_key_progress %>
 
-<%= link_to exams_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800" do %>
+<%= link_to exams_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-cocoa-800" do %>
   <%= icon :arrow_left, class: "size-4" %> Simulados
 <% end %>
 
@@ -26,10 +26,10 @@
        [ "Alternativas", "A–#{@exam.options.last}", :check_circle ]
      ].each do |label, value, icon_name| %>
     <div class="card flex items-center gap-4 p-5">
-      <span class="flex size-11 items-center justify-center rounded-xl bg-navy-50 text-navy-700"><%= icon icon_name %></span>
+      <span class="flex size-11 items-center justify-center rounded-xl bg-cocoa-50 text-cocoa-700"><%= icon icon_name %></span>
       <div>
-        <p class="text-2xl font-extrabold tracking-tight text-navy-900 tabular-nums"><%= value %></p>
-        <p class="text-xs font-medium text-slate-500"><%= label %></p>
+        <p class="text-2xl font-extrabold tracking-tight text-cocoa-900 tabular-nums"><%= value %></p>
+        <p class="text-xs font-medium text-stone-500"><%= label %></p>
       </div>
     </div>
   <% end %>
@@ -39,13 +39,13 @@
   <%# ---------- Composição ---------- %>
   <section class="card overflow-hidden lg:col-span-2">
     <div class="p-6 pb-4">
-      <h2 class="font-bold text-navy-900">Composição da nota</h2>
-      <p class="text-sm text-slate-500">Quanto cada matéria pesa no total de <%= points(total) %> pontos.</p>
+      <h2 class="font-bold text-cocoa-900">Composição da nota</h2>
+      <p class="text-sm text-stone-500">Quanto cada matéria pesa no total de <%= points(total) %> pontos.</p>
       <div class="mt-4 flex h-3 gap-0.5 overflow-hidden rounded-full">
         <% subjects.each do |es| %>
-          <span title="<%= es.subject.name %>: <%= points(es.total_points) %> pts"
+          <span title="<%= subject_label(es) %>: <%= points(es.total_points) %> pts"
                 class="transition-all hover:opacity-80"
-                style="flex: <%= total.positive? ? es.total_points : 1 %>; background: <%= subject_color(es.subject) %>"></span>
+                style="flex: <%= total.positive? ? es.total_points : 1 %>; background: <%= subject_color(es) %>"></span>
         <% end %>
       </div>
     </div>
@@ -58,18 +58,18 @@
           <% subjects.each do |es| %>
             <tr>
               <td>
-                <span class="flex items-center gap-2.5 font-semibold text-navy-900">
-                  <span class="size-2.5 rounded-full" style="background: <%= subject_color(es.subject) %>"></span><%= es.subject.name %>
-                  <% if es.foreign_language? %><span class="badge badge-green">Inglês / Espanhol</span><% end %>
+                <span class="flex items-center gap-2.5 font-semibold text-cocoa-900">
+                  <span class="size-2.5 rounded-full" style="background: <%= subject_color(es) %>"></span><%= subject_label(es) %>
+                  <% if es.foreign_language? %><span class="badge badge-caramel">2 gabaritos</span><% end %>
                 </span>
               </td>
-              <td class="text-slate-500 tabular-nums">
+              <td class="text-stone-500 tabular-nums">
                 <span class="font-mono text-xs"><%= es.questions.first&.number %>–<%= es.questions.last&.number %></span>
                 <span class="badge badge-slate ml-1"><%= es.questions_count %></span>
               </td>
               <td class="text-right tabular-nums"><%= points(es.points_per_question) %></td>
               <td class="text-right font-semibold tabular-nums"><%= points(es.total_points) %></td>
-              <td class="text-right text-slate-500 tabular-nums"><%= total.positive? ? number_to_percentage(es.total_points * 100 / total, precision: 0) : "—" %></td>
+              <td class="text-right text-stone-500 tabular-nums"><%= total.positive? ? number_to_percentage(es.total_points * 100 / total, precision: 0) : "—" %></td>
             </tr>
           <% end %>
         </tbody>
@@ -81,39 +81,46 @@
     <%# ---------- Gabarito ---------- %>
     <section class="card p-6">
       <div class="flex items-center justify-between">
-        <h2 class="font-bold text-navy-900">Gabarito</h2>
-        <span class="badge <%= progress == 100 ? 'badge-green' : 'badge-gold' %>"><%= progress %>%</span>
+        <h2 class="font-bold text-cocoa-900">Gabarito</h2>
+        <span class="badge <%= progress == 100 ? 'badge-caramel' : 'badge-sand' %>"><%= progress %>%</span>
       </div>
       <%# Anel de progresso %>
       <div class="my-6 flex justify-center">
         <div class="relative size-32">
           <svg viewBox="0 0 36 36" class="size-full -rotate-90">
-            <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" class="stroke-slate-100"/>
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" class="stroke-stone-100"/>
             <circle cx="18" cy="18" r="15.9" fill="none" stroke-width="3" stroke-linecap="round" pathLength="100"
-                    stroke-dasharray="<%= progress %> 100" class="<%= progress == 100 ? 'stroke-green-500' : 'stroke-gold-400' %> transition-all duration-700"/>
+                    stroke-dasharray="<%= progress %> 100" class="<%= progress == 100 ? 'stroke-caramel-500' : 'stroke-sand-400' %> transition-all duration-700"/>
           </svg>
           <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <span class="text-3xl font-extrabold text-navy-900"><%= progress %>%</span>
-            <span class="text-xs text-slate-500">preenchido</span>
+            <span class="text-3xl font-extrabold text-cocoa-900"><%= progress %>%</span>
+            <span class="text-xs text-stone-500">preenchido</span>
           </div>
         </div>
       </div>
       <%= link_to edit_exam_answer_key_path(@exam), class: "btn #{progress == 100 ? 'btn-secondary' : 'btn-primary'} w-full" do %>
         <%= icon :keyboard %> <%= progress == 100 ? "Revisar gabarito" : "Preencher gabarito" %>
       <% end %>
+      <% if @exam.adapted_answer_key? %>
+        <% adapted_progress = @exam.answer_key_progress(adapted: true) %>
+        <%= link_to edit_exam_answer_key_path(@exam, versao: "adaptada"), class: "btn btn-secondary mt-2 w-full" do %>
+          Gabarito adaptado
+          <span class="badge <%= adapted_progress == 100 ? 'badge-caramel' : 'badge-sand' %>"><%= adapted_progress %>%</span>
+        <% end %>
+      <% end %>
     </section>
 
     <%# ---------- Correção por foto ---------- %>
-    <section class="relative overflow-hidden rounded-2xl bg-linear-to-br from-navy-800 to-navy-950 p-6 text-white">
-      <div class="pointer-events-none absolute -top-10 -right-10 size-40 rounded-full bg-green-500/30 blur-2xl"></div>
+    <section class="relative overflow-hidden rounded-2xl bg-linear-to-br from-cocoa-800 to-cocoa-950 p-6 text-white">
+      <div class="pointer-events-none absolute -top-10 -right-10 size-40 rounded-full bg-caramel-500/30 blur-2xl"></div>
       <span class="relative flex size-11 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/15"><%= icon :scan %></span>
       <h2 class="relative mt-4 font-bold">Correção por foto</h2>
-      <p class="relative mt-1 text-sm text-navy-100/80">Envie as fotos dos cartões-resposta e as notas saem automaticamente.</p>
+      <p class="relative mt-1 text-sm text-cocoa-100/80">Envie as fotos dos cartões-resposta e as notas saem automaticamente.</p>
       <%= link_to new_exam_answer_sheet_path(@exam), class: "btn btn-accent relative mt-5 w-full" do %>
         <%= icon :plus %> Enviar cartões
       <% end %>
       <% unless progress == 100 %>
-        <p class="relative mt-3 text-xs text-gold-300">Dica: preencha o gabarito antes; as notas são recalculadas quando ele muda.</p>
+        <p class="relative mt-3 text-xs text-sand-300">Dica: preencha o gabarito antes; as notas são recalculadas quando ele muda.</p>
       <% end %>
     </section>
   </aside>

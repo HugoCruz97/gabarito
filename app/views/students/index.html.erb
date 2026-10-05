@@ -1,5 +1,6 @@
 <% content_for :title, "Alunos" %>
 <%= page_header "Alunos", eyebrow: "Escola", subtitle: pluralize(Student.count, "aluno cadastrado", plural: "alunos cadastrados") do %>
+  <%= link_to new_student_import_path, class: "btn btn-secondary" do %>Importar planilha<% end %>
   <%= link_to new_student_path(classroom_id: params[:classroom_id]), class: "btn btn-primary" do %><%= icon :plus %> Novo aluno<% end %>
 <% end %>
 
@@ -7,7 +8,7 @@
 <%= form_with url: students_path, method: :get, class: "mb-5 flex flex-wrap items-center gap-3",
       data: { turbo_frame: "students", turbo_action: "advance", controller: "auto-submit" } do |f| %>
   <div class="relative w-full max-w-xs">
-    <%= icon :search, class: "pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400" %>
+    <%= icon :search, class: "pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-stone-400" %>
     <%= f.search_field :q, value: params[:q], placeholder: "Buscar por nome ou matrícula…",
           class: "input pl-10", data: { action: "input->auto-submit#submit" } %>
   </div>
@@ -16,8 +17,8 @@
       <label class="cursor-pointer">
         <%= f.radio_button :classroom_id, value.to_s, checked: params[:classroom_id].to_s == value.to_s, class: "peer sr-only",
               data: { action: "change->auto-submit#submit" } %>
-        <span class="inline-flex rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 transition select-none hover:ring-slate-300
-                     peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800"><%= label %></span>
+        <span class="inline-flex rounded-full px-3.5 py-1.5 text-sm font-medium text-stone-600 ring-1 ring-stone-200 transition select-none hover:ring-stone-300
+                     peer-checked:bg-cocoa-800 peer-checked:text-white peer-checked:ring-cocoa-800"><%= label %></span>
       </label>
     <% end %>
   </div>

@@ -1,0 +1,158 @@
+<% content_for :title, "Notas · #{@exam.title}" %>
+<% r = @report %>
+<% total_points = @exam.total_points %>
+
+<%= link_to exam_path(@exam), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-cocoa-800 print:hidden" do %>
+  <%= icon :arrow_left, class: "size-4" %> <%= @exam.title %>
+<% end %>
+
+<%= page_header "Notas da turma", eyebrow: @exam.title,
+      subtitle: [ (l(@exam.applied_on, format: :long) if @exam.applied_on), r.classroom&.display_name || "Todas as turmas",
+                  pluralize(r.rows.size, "aluno corrigido", plural: "alunos corrigidos") ].compact.join(" · ") do %>
+  <div class="flex gap-2 print:hidden">
+    <%= link_to exam_report_path(@exam, format: :xlsx, turma: r.classroom&.id), class: "btn btn-secondary", data: { turbo: false } do %>
+      <%= icon :subjects %> Excel
+    <% end %>
+    <button type="button" onclick="window.print()" class="btn btn-primary"><%= icon :exams %> Imprimir / PDF</button>
+  </div>
+<% end %>
+
+<%# ---------- Filtro por turma ---------- %>
+<% if r.classrooms.size > 1 %>
+  <nav class="mb-6 flex flex-wrap gap-2 print:hidden">
+    <% [ [ "Todas as turmas", nil ] ].concat(r.classrooms.map { |c| [ c.name, c.id ] }).each do |label, id| %>
+      <%= link_to label, exam_report_path(@exam, turma: id),
+            class: "rounded-full px-3.5 py-1.5 text-sm font-medium ring-1 transition #{r.classroom&.id == id ? 'bg-cocoa-800 text-white ring-cocoa-800' : 'text-stone-600 ring-stone-200 hover:ring-stone-300'}" %>
+    <% end %>
+  </nav>
+<% end %>
+
+<% if r.rows.empty? %>
+  <%= empty_state :target, "Nenhum cartão corrigido ainda", "Envie e corrija os cartões-resposta deste simulado para ver as notas aqui." do %>
+    <%= link_to new_exam_answer_sheet_path(@exam), class: "btn btn-primary" do %><%= icon :plus %> Enviar cartões<% end %>
+  <% end %>
+<% else %>
+  <%# ---------- Resumo ---------- %>
+  <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4 print:grid-cols-4 print:gap-2">
+    <% [
+         [ "Média da turma", r.average, :target ],
+         [ "Maior nota", r.highest, :check_circle ],
+         [ "Menor nota", r.lowest, :alert ],
+         [ "Alunos corrigidos", nil, :students ]
+       ].each do |label, value, icon_name| %>
+      <div class="card flex items-center gap-4 p-5 print:p-3 print:shadow-none">
+        <span class="flex size-11 items-center justify-center rounded-xl bg-cocoa-50 text-cocoa-700 print:hidden"><%= icon icon_name %></span>
+        <div>
+          <p class="text-2xl font-extrabold tracking-tight text-cocoa-900 tabular-nums">
+            <% if value %><%= points(value.round(2)) %><span class="text-sm font-semibold text-stone-400"> / <%= points(total_points) %></span><% else %><%= r.rows.size %><% end %>
+          </p>
+          <p class="text-xs font-medium text-stone-500"><%= label %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ---------- Média por matéria ---------- %>
+  <section class="card mb-6 p-6 print:p-4 print:shadow-none">
+    <h2 class="mb-4 font-bold text-cocoa-900">Média por matéria</h2>
+    <div class="grid gap-x-8 gap-y-3 sm:grid-cols-2 print:grid-cols-2">
+      <% r.subjects.zip(r.subject_averages).each do |es, avg| %>
+        <div>
+          <div class="mb-1 flex justify-between text-sm">
+            <span class="flex items-center gap-2 font-medium text-stone-700"><span class="size-2.5 rounded-full" style="background: <%= subject_color(es) %>"></span><%= subject_label(es) %></span>
+            <span class="font-bold text-cocoa-900 tabular-nums"><%= points(avg.round(2)) %> <span class="font-normal text-stone-400">/ 10</span></span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-stone-100">
+            <div class="h-full rounded-full" style="width: <%= (avg * 10).round(1) %>%; background: <%= subject_color(es) %>"></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <%# ---------- Ranking ---------- %>
+  <section class="card overflow-hidden print:shadow-none">
+    <div class="overflow-x-auto">
+      <table class="table print:text-xs">
+        <thead>
+          <tr>
+            <th class="w-12">#</th>
+            <th>Aluno</th>
+            <% if r.classroom.nil? && r.classrooms.size > 1 %><th>Turma</th><% end %>
+            <% r.subjects.each do |es| %>
+              <th class="!text-right whitespace-nowrap"><%= subject_label(es).truncate(17) %></th>
+            <% end %>
+            <th class="!text-right">Total</th>
+            <th class="!text-right">%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% r.rows.each do |row| %>
+            <tr class="print:break-inside-avoid">
+              <td>
+                <span class="inline-flex size-7 items-center justify-center rounded-full text-xs font-bold tabular-nums
+                             <%= { 1 => 'bg-sand-300 text-sand-900', 2 => 'bg-stone-200 text-stone-700', 3 => 'bg-caramel-200 text-caramel-800' }.fetch(row.position, 'text-stone-500') %>">
+                  <%= row.position %>
+                </span>
+              </td>
+              <td>
+                <span class="flex flex-wrap items-center gap-2 font-semibold text-cocoa-900">
+                  <%= row.student&.name || "Cartão sem aluno" %>
+                  <% if row.adapted %><span class="badge badge-sand">Adaptada</span><% end %>
+                </span>
+                <% if row.sheet.read? && row.sheet.needs_review? %><span class="text-xs text-sand-700 print:hidden">a revisar</span><% end %>
+              </td>
+              <% if r.classroom.nil? && r.classrooms.size > 1 %><td class="text-stone-500"><%= row.classroom&.name %></td><% end %>
+              <% row.scores.each_with_index do |score, i| %>
+                <td class="text-right tabular-nums text-stone-600">
+                  <%= points(score.round(2)) %>
+                  <% if r.subjects[i].foreign_language? && row.language %>
+                    <span class="ml-1 rounded bg-stone-100 px-1 text-[10px] font-bold text-stone-500"><%= { "ingles" => "EN", "espanhol" => "ES" }[row.language] %></span>
+                  <% end %>
+                </td>
+              <% end %>
+              <td class="text-right text-base font-extrabold text-cocoa-900 tabular-nums"><%= points(row.total) %></td>
+              <td class="text-right text-stone-500 tabular-nums"><%= number_to_percentage(row.percent, precision: 0) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot class="bg-sand-50 font-semibold">
+          <tr>
+            <td></td>
+            <td>Média</td>
+            <% if r.classroom.nil? && r.classrooms.size > 1 %><td></td><% end %>
+            <% r.subject_averages.each do |avg| %><td class="text-right tabular-nums"><%= points(avg.round(2)) %></td><% end %>
+            <td class="text-right tabular-nums"><%= points(r.average.round(2)) %></td>
+            <td class="text-right tabular-nums"><%= number_to_percentage(r.average * 100 / total_points, precision: 0) %></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+<% end %>
+
+<%# ---------- Pendências ---------- %>
+<% pending, review, absent = r.pending_sheets, r.needs_review, r.absent_students %>
+<% if pending.any? || review.any? || absent.any? %>
+  <section class="mt-6 grid gap-4 md:grid-cols-3 print:hidden">
+    <% if review.any? %>
+      <div class="rounded-2xl bg-sand-50 p-5 ring-1 ring-sand-200">
+        <p class="font-semibold text-sand-800"><%= pluralize(review.size, "cartão a revisar", plural: "cartões a revisar") %></p>
+        <p class="mt-1 text-sm text-sand-700">Já estão no ranking, mas a nota pode mudar depois da revisão.</p>
+        <%= link_to "Revisar agora", exam_answer_sheet_path(@exam, review.first), class: "btn btn-secondary btn-sm mt-3" %>
+      </div>
+    <% end %>
+    <% if pending.any? %>
+      <div class="rounded-2xl bg-stone-100 p-5">
+        <p class="font-semibold text-stone-700"><%= pluralize(pending.size, "cartão fora do ranking", plural: "cartões fora do ranking") %></p>
+        <p class="mt-1 text-sm text-stone-600">Ainda na fila, em leitura ou não lidos: <%= pending.map { |s| s.student&.name || "sem aluno" }.to_sentence %>.</p>
+      </div>
+    <% end %>
+    <% if absent.any? %>
+      <div class="rounded-2xl bg-stone-100 p-5">
+        <p class="font-semibold text-stone-700"><%= pluralize(absent.size, "aluno sem cartão", plural: "alunos sem cartão") %></p>
+        <p class="mt-1 text-sm text-stone-600"><%= absent.map(&:name).to_sentence %></p>
+      </div>
+    <% end %>
+  </section>
+<% end %>

@@ -22,18 +22,19 @@ class AnswerSheet < ApplicationRecord
   validates :language, inclusion: { in: Exam::LANGUAGES.keys }, allow_nil: true
   validates :student_id, uniqueness: { scope: :exam_id, message: "já tem um cartão neste simulado" }, allow_nil: true
   validate :image_must_be_valid, on: :create
-  validate :exam_must_fit_template, on: :create
 
   scope :by_student_name, -> { left_joins(:student).order(Arel.sql("students.name NULLS LAST"), :created_at) }
 
   def self.template_key = Rails.configuration.x.omr.default_template
-  def self.template = Rails.configuration.x.omr.templates.fetch(template_key)
 
   # ---------- Leitura automática ----------
 
   def read_with_omr!(client = OmrClient.new)
     update!(status: :processing, error_message: nil)
-    result = image.open { |file| client.read(file, filename: image.filename.to_s, template: self.class.template_key) }
+    result = image.open do |file|
+      client.read(file, filename: image.filename.to_s, questions: exam.total_questions,
+        options: exam.options_count, template: self.class.template_key)
+    end
     apply_reading!(result)
   rescue OmrClient::Error => e
     update!(status: :failed, error_message: e.message)
@@ -96,15 +97,21 @@ class AnswerSheet < ApplicationRecord
 
   # ---------- Correção ----------
 
+  # Prova adaptada: o aluno marcado como adaptado é corrigido pelo gabarito adaptado,
+  # se o simulado tiver um (senão, pelo normal).
+  def adapted?
+    exam.adapted_answer_key? && student&.adapted? ? true : false
+  end
+
   # Questão anulada: todos ganham o ponto.
   # Marcação múltipla ou em branco: zero.
   # Língua estrangeira: corrige pelo gabarito (e anulação) da língua marcada no cartão
   # (sem língua marcada não há como corrigir, então vale zero até a revisão).
   def points_for(question, answer)
-    return question.points_per_question if question.annulled_for?(language)
+    return question.points_per_question if question.annulled_for?(language, adapted: adapted?)
     return 0 if answer.nil? || answer.multiple_marks? || answer.marked_option.blank?
 
-    expected = question.correct_option_for(language)
+    expected = question.correct_option_for(language, adapted: adapted?)
     expected.present? && answer.marked_option == expected ? question.points_per_question : 0
   end
 
@@ -134,13 +141,6 @@ class AnswerSheet < ApplicationRecord
       errors.add(:image, "precisa ser uma foto JPG, PNG ou WEBP")
     elsif image.blob.byte_size > MAX_IMAGE_SIZE
       errors.add(:image, "é grande demais (máximo 20 MB)")
-    end
-  end
-
-  def exam_must_fit_template
-    capacity = self.class.template[:questions]
-    if exam && exam.total_questions > capacity
-      errors.add(:base, "O simulado tem #{exam.total_questions} questões, mas o cartão-resposta só tem #{capacity}")
     end
   end
 end

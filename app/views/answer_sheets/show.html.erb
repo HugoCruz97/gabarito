@@ -3,27 +3,28 @@
 <% attention = sheet.answers.select(&:needs_attention?).map(&:exam_question_id).to_set %>
 <% questions_by_id = @questions_by_subject.values.flatten.index_by(&:id) %>
 
-<%= link_to exam_path(@exam, anchor: "cartoes"), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800" do %>
+<%= link_to exam_path(@exam, anchor: "cartoes"), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-cocoa-800" do %>
   <%= icon :arrow_left, class: "size-4" %> <%= @exam.title %>
 <% end %>
 
 <%= page_header sheet.student&.name || "Cartão sem aluno", eyebrow: "Revisão do cartão",
       subtitle: sheet.read_at ? "Lido em #{l(sheet.read_at, format: :short)}" : nil do %>
   <%= render "answer_sheets/status", sheet: sheet %>
+  <% if sheet.adapted? %><span class="badge badge-sand">Prova adaptada · corrigida pelo gabarito adaptado</span><% end %>
 <% end %>
 
 <%= form_with model: sheet, url: exam_answer_sheet_path(@exam, sheet), method: :patch, class: "grid gap-6 lg:grid-cols-5" do |f| %>
   <%# ---------- Imagem ---------- %>
   <aside class="lg:col-span-2 lg:sticky lg:top-24 lg:self-start">
     <div class="card overflow-hidden" data-controller="tabs">
-      <div class="flex gap-1 border-b border-slate-100 p-2 text-sm">
+      <div class="flex gap-1 border-b border-stone-100 p-2 text-sm">
         <% [ [ "conferencia", "Conferência" ], [ "original", "Foto original" ] ].each_with_index do |(key, label), i| %>
           <button type="button" data-action="tabs#select" data-tabs-key-param="<%= key %>" data-tabs-target="tab"
-                  class="rounded-lg px-3 py-1.5 font-semibold text-slate-500 transition hover:bg-slate-50 aria-selected:bg-navy-50 aria-selected:text-navy-900"
+                  class="rounded-lg px-3 py-1.5 font-semibold text-stone-500 transition hover:bg-stone-50 aria-selected:bg-cocoa-50 aria-selected:text-cocoa-900"
                   aria-selected="<%= i.zero? %>"><%= label %></button>
         <% end %>
       </div>
-      <div class="bg-slate-100">
+      <div class="bg-stone-100">
         <% if sheet.overlay.attached? %>
           <%= link_to rails_blob_path(sheet.overlay, disposition: "inline"), target: "_blank", data: { tabs_target: "panel", key: "conferencia" }, title: "Abrir em tamanho real" do %>
             <%= image_tag rails_blob_path(sheet.overlay, disposition: "inline"), alt: "Leitura do cartão", class: "w-full" %>
@@ -34,8 +35,8 @@
           <%= image_tag rails_blob_path(sheet.image, disposition: "inline"), alt: "Foto do cartão", class: "w-full" %>
         <% end %>
       </div>
-      <p class="flex flex-wrap gap-x-4 gap-y-1 p-3 text-xs text-slate-500">
-        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full ring-2 ring-green-600"></span> lida</span>
+      <p class="flex flex-wrap gap-x-4 gap-y-1 p-3 text-xs text-stone-500">
+        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full ring-2 ring-caramel-600"></span> lida</span>
         <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full ring-2 ring-orange-400"></span> duvidosa</span>
         <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full ring-2 ring-red-500"></span> mais de uma</span>
       </p>
@@ -55,25 +56,25 @@
         <div>
           <%= f.label :language, "Língua estrangeira", class: "label" %>
           <%= f.select :language, Exam::LANGUAGES.invert.to_a, { include_blank: "Não marcada" },
-                class: "input #{'!ring-2 !ring-gold-400' if sheet.language_missing?}" %>
+                class: "input #{'!ring-2 !ring-sand-400' if sheet.language_missing?}" %>
           <p class="hint">Lida no cartão (bolinha Inglês/Espanhol). Define qual gabarito vale.</p>
         </div>
       <% end %>
     </section>
 
     <%# ---------- Nota ---------- %>
-    <section class="relative overflow-hidden rounded-2xl bg-navy-900 p-6 text-white">
-      <div class="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-green-500/30 blur-3xl"></div>
+    <section class="relative overflow-hidden rounded-2xl bg-cocoa-900 p-6 text-white">
+      <div class="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-caramel-500/30 blur-3xl"></div>
       <div class="relative flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-xs font-bold tracking-[0.18em] text-green-300 uppercase">Nota</p>
-          <p class="text-5xl font-extrabold tabular-nums"><%= points(sheet.score.to_d) %><span class="text-xl text-navy-300"> / <%= points(@exam.total_points) %></span></p>
+          <p class="text-xs font-bold tracking-[0.18em] text-caramel-300 uppercase">Nota</p>
+          <p class="text-5xl font-extrabold tabular-nums"><%= points(sheet.score.to_d) %><span class="text-xl text-cocoa-300"> / <%= points(@exam.total_points) %></span></p>
         </div>
         <div class="flex flex-wrap gap-2">
           <% @scores.each do |es, value| %>
             <span class="rounded-xl bg-white/10 px-3 py-2 text-sm ring-1 ring-white/10">
-              <span class="block text-xs text-navy-200"><%= es.subject.name %></span>
-              <strong class="tabular-nums"><%= points(value.round(2)) %></strong><span class="text-navy-300"> / 10</span>
+              <span class="block text-xs text-cocoa-200"><%= subject_label(es, sheet.language) %></span>
+              <strong class="tabular-nums"><%= points(value.round(2)) %></strong><span class="text-cocoa-300"> / 10</span>
             </span>
           <% end %>
         </div>
@@ -81,10 +82,10 @@
     </section>
 
     <% if attention.any? %>
-      <div class="flex flex-wrap items-center gap-2 rounded-2xl bg-gold-50 p-4 text-sm text-gold-700 ring-1 ring-gold-200">
+      <div class="flex flex-wrap items-center gap-2 rounded-2xl bg-sand-50 p-4 text-sm text-sand-700 ring-1 ring-sand-200">
         <%= icon :alert, class: "size-4" %> Confira:
         <% attention.map { |id| questions_by_id[id] }.compact.sort_by(&:number).each do |q| %>
-          <a href="#q<%= q.number %>" class="rounded-lg bg-white px-2 py-0.5 font-mono font-bold text-gold-700 ring-1 ring-gold-200 hover:bg-gold-100">Q<%= q.number %></a>
+          <a href="#q<%= q.number %>" class="rounded-lg bg-white px-2 py-0.5 font-mono font-bold text-sand-700 ring-1 ring-sand-200 hover:bg-sand-100">Q<%= q.number %></a>
         <% end %>
       </div>
     <% end %>
@@ -93,26 +94,37 @@
     <% @questions_by_subject.each do |exam_subject, questions| %>
       <section class="card p-5 sm:p-6">
         <div class="mb-3 flex flex-wrap items-center gap-3">
-          <span class="size-3 rounded-full" style="background: <%= subject_color(exam_subject.subject) %>"></span>
-          <h2 class="font-bold text-navy-900"><%= exam_subject.subject.name %></h2>
-          <span class="badge badge-navy"><%= points(exam_subject.points_per_question) %> pt cada</span>
+          <span class="size-3 rounded-full" style="background: <%= subject_color(exam_subject) %>"></span>
+          <h2 class="font-bold text-cocoa-900"><%= subject_label(exam_subject) %></h2>
+          <span class="badge badge-cocoa"><%= points(exam_subject.points_per_question) %> pt cada</span>
+          <% if exam_subject.foreign_language? %>
+            <span class="badge badge-caramel"><%= sheet.language ? "Corrigida pelo gabarito de #{Exam::LANGUAGES[sheet.language]}" : "Inglês / Espanhol" %></span>
+          <% end %>
         </div>
-        <div class="divide-y divide-slate-100">
+        <% if exam_subject.foreign_language? && sheet.language.nil? %>
+          <p class="mb-3 flex items-start gap-2 rounded-xl bg-sand-50 p-3 text-sm text-sand-700 ring-1 ring-sand-200">
+            <%= icon :alert, class: "mt-0.5 size-4 shrink-0" %>
+            <span>A língua não foi identificada no cartão, por isso estas questões ainda não valem pontos.
+              Escolha <strong>Inglês</strong> ou <strong>Espanhol</strong> no campo <strong>Língua estrangeira</strong> lá em cima e clique em
+              <strong>Confirmar correção</strong>. Abaixo estão os dois gabaritos para você conferir.</span>
+          </p>
+        <% end %>
+        <div class="divide-y divide-stone-100">
           <% questions.each do |question| %>
             <% answer = @answers[question.id] %>
             <% value = answer&.multiple_marks? ? "multiple" : answer&.marked_option.to_s %>
-            <% correct = question.correct_option_for(sheet.language) %>
-            <% annulled = question.annulled_for?(sheet.language) %>
+            <% correct = question.correct_option_for(sheet.language, adapted: sheet.adapted?) %>
+            <% annulled = question.annulled_for?(sheet.language, adapted: sheet.adapted?) %>
             <% hit = annulled || (correct.present? && value == correct) %>
-            <div id="q<%= question.number %>" class="flex scroll-mt-28 flex-wrap items-center gap-3 rounded-xl px-2 py-2 <%= 'bg-gold-50 ring-1 ring-gold-200' if attention.include?(question.id) %>">
-              <span class="w-7 text-right font-mono text-sm font-bold text-slate-400"><%= question.number %></span>
+            <div id="q<%= question.number %>" class="flex scroll-mt-28 flex-wrap items-center gap-3 rounded-xl px-2 py-2 <%= 'bg-sand-50 ring-1 ring-sand-200' if attention.include?(question.id) %>">
+              <span class="w-7 text-right font-mono text-sm font-bold text-stone-400"><%= question.number %></span>
               <div class="flex gap-1.5">
                 <% @exam.options.each do |option| %>
                   <label class="relative cursor-pointer">
                     <%= radio_button_tag "answers[#{question.id}]", option, value == option, id: "a#{question.id}_#{option}", class: "peer sr-only" %>
                     <span class="bubble"><%= option %></span>
                     <% if option == correct && !annulled %>
-                      <span class="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full bg-green-500 ring-2 ring-white" title="Resposta certa"></span>
+                      <span class="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full bg-caramel-500 ring-2 ring-white" title="Resposta certa"></span>
                     <% end %>
                   </label>
                 <% end %>
@@ -121,20 +133,26 @@
                 <% [ [ "", "Em branco" ], [ "multiple", "2+" ] ].each do |opt_value, label| %>
                   <label class="cursor-pointer">
                     <%= radio_button_tag "answers[#{question.id}]", opt_value, value == opt_value, id: "a#{question.id}_#{opt_value.presence || 'blank'}", class: "peer sr-only" %>
-                    <span class="block rounded-lg px-2 py-1 text-slate-400 ring-1 ring-slate-200 transition hover:text-slate-600 peer-checked:bg-slate-700 peer-checked:text-white peer-checked:ring-slate-700"><%= label %></span>
+                    <span class="block rounded-lg px-2 py-1 text-stone-400 ring-1 ring-stone-200 transition hover:text-stone-600 peer-checked:bg-stone-700 peer-checked:text-white peer-checked:ring-stone-700"><%= label %></span>
                   </label>
                 <% end %>
               </div>
               <span class="ml-auto flex items-center gap-2 text-xs">
-                <% if answer&.status == "doubtful" %><span class="badge badge-gold">duvidosa</span><% end %>
+                <% if answer&.status == "doubtful" %><span class="badge badge-sand">duvidosa</span><% end %>
                 <% if answer&.status == "multiple" %><span class="badge bg-red-50 text-red-700 ring-1 ring-red-200">2+ marcadas</span><% end %>
                 <% if answer&.status == "manual" %><span class="badge badge-slate">ajustada</span><% end %>
-                <% if annulled %>
-                  <span class="badge badge-gold">anulada</span>
+                <% if question.foreign_language? && sheet.language.nil? %>
+                  <%# Língua desconhecida: mostra os dois gabaritos em vez de "sem gabarito" %>
+                  <span class="badge badge-slate" title="Gabarito de Inglês / de Espanhol">
+                    EN <%= question.annulled_for?("ingles", adapted: sheet.adapted?) ? "anulada" : (question.correct_option_for("ingles", adapted: sheet.adapted?) || "—") %> ·
+                    ES <%= question.annulled_for?("espanhol", adapted: sheet.adapted?) ? "anulada" : (question.correct_option_for("espanhol", adapted: sheet.adapted?) || "—") %>
+                  </span>
+                <% elsif annulled %>
+                  <span class="badge badge-sand">anulada</span>
                 <% elsif correct.blank? %>
-                  <span class="text-slate-400" title="Gabarito não preenchido">sem gabarito</span>
+                  <span class="text-stone-400" title="Gabarito não preenchido">sem gabarito</span>
                 <% else %>
-                  <span class="<%= hit ? 'text-green-600' : 'text-red-500' %>" title="<%= hit ? 'Acertou' : 'Errou' %>"><%= icon(hit ? :check : :x, class: "size-4") %></span>
+                  <span class="<%= hit ? 'text-caramel-600' : 'text-red-500' %>" title="<%= hit ? 'Acertou' : 'Errou' %>"><%= icon(hit ? :check : :x, class: "size-4") %></span>
                 <% end %>
               </span>
             </div>

@@ -1,6 +1,6 @@
 <% content_for :title, @student.name %>
 
-<%= link_to @student.classroom, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800" do %>
+<%= link_to @student.classroom, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-cocoa-800" do %>
   <%= icon :arrow_left, class: "size-4" %> <%= @student.classroom.name %>
 <% end %>
 
@@ -9,10 +9,11 @@
   <div class="relative flex flex-wrap items-end gap-5 pt-8">
     <span class="rounded-full ring-4 ring-white"><%= avatar(@student.name, size: "size-20 text-2xl") %></span>
     <div class="min-w-0 flex-1">
-      <h1 class="text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl"><%= @student.name %></h1>
-      <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-500">
-        <span class="badge badge-navy"><%= @student.classroom.display_name %></span>
+      <h1 class="text-2xl font-extrabold tracking-tight text-cocoa-900 sm:text-3xl"><%= @student.name %></h1>
+      <p class="mt-1 flex flex-wrap items-center gap-2 text-sm text-stone-500">
+        <span class="badge badge-cocoa"><%= @student.classroom.display_name %></span>
         <span class="font-mono text-xs">Matrícula: <%= @student.registration_number || "—" %></span>
+        <% if @student.adapted? %><span class="badge badge-sand">Faz prova adaptada</span><% end %>
       </p>
     </div>
     <div class="flex gap-2">

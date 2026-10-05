@@ -49,14 +49,23 @@ class Exam < ApplicationRecord
     answer_key_progress == 100
   end
 
+  # Versões de gabarito que este simulado usa: normal e, se houver, adaptada
+  def answer_key_versions
+    adapted_answer_key? ? [ false, true ] : [ false ]
+  end
+
   # Percentual do gabarito preenchido. Questões de língua estrangeira têm dois gabaritos
-  # (Inglês e Espanhol) e contam duas vezes; anuladas contam como preenchidas.
-  def answer_key_progress
+  # (Inglês e Espanhol) e contam duas vezes; com prova adaptada, cada versão conta
+  # separado. Anuladas contam como preenchidas. `adapted:` limita a uma versão.
+  def answer_key_progress(adapted: nil)
     foreign_ids = exam_subjects.select(&:foreign_language?).map(&:id)
+    versions = adapted.nil? ? answer_key_versions : [ adapted ]
     slots = questions.flat_map do |q|
-      keys = [ [ q.correct_option, q.annulled? ] ]
-      keys << [ q.correct_option_es, q.annulled_es? ] if foreign_ids.include?(q.exam_subject_id)
-      keys.map { |key, annulled| key.present? || annulled }
+      languages = foreign_ids.include?(q.exam_subject_id) ? %w[ingles espanhol] : %w[ingles]
+      versions.product(languages).map do |version, language|
+        option, annulled = ExamQuestion::KEY_FIELDS[[ version, language ]]
+        q[option].present? || q[annulled]
+      end
     end
     return 0 if slots.empty?
 

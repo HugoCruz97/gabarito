@@ -1,0 +1,74 @@
+<% content_for :title, "Prévia da importação" %>
+<% counts = @import.counts %>
+<% styles = {
+     create: [ "Novo", "badge-caramel" ],
+     update: [ "Atualizar", "badge-cocoa" ],
+     unchanged: [ "Sem mudança", "badge-slate" ],
+     error: [ "Erro", "bg-red-50 text-red-700 ring-1 ring-red-200" ]
+   } %>
+
+<%= link_to new_student_import_path, class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-cocoa-800" do %>
+  <%= icon :arrow_left, class: "size-4" %> Escolher outra planilha
+<% end %>
+
+<%= page_header "Prévia da importação", eyebrow: "Importar alunos",
+      subtitle: "Nada foi gravado ainda. Confira e confirme." do %>
+  <% if @import.valid? %>
+    <%= form_with url: confirm_student_import_path do |f| %>
+      <%= hidden_field_tag :signed_id, @signed_id %>
+      <%= hidden_field_tag :default_classroom_id, @default_classroom&.id %>
+      <%= f.button type: "submit", class: "btn btn-primary", data: { turbo_submits_with: "Importando…" } do %>
+        <%= icon :check %> Confirmar importação
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+  <% styles.each do |action, (label, badge)| %>
+    <div class="card p-4">
+      <p class="text-2xl font-extrabold tabular-nums text-cocoa-900"><%= counts[action].to_i %></p>
+      <p class="mt-1"><span class="badge <%= badge %>"><%= label %></span></p>
+    </div>
+  <% end %>
+</div>
+
+<% if (classrooms = @import.new_classrooms).any? %>
+  <p class="mb-4 flex flex-wrap items-center gap-2 rounded-2xl bg-sand-50 p-4 text-sm text-sand-800 ring-1 ring-sand-200">
+    <%= icon :classrooms, class: "size-4" %> Turmas que serão criadas:
+    <% classrooms.each do |name| %><span class="badge badge-sand"><%= name %></span><% end %>
+  </p>
+<% end %>
+
+<% unless @import.valid? %>
+  <p class="mb-4 rounded-2xl bg-sand-50 p-4 text-sm text-sand-800 ring-1 ring-sand-200">
+    Não há alunos novos nem atualizações nesta planilha.
+  </p>
+<% end %>
+
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr><th class="w-16">Linha</th><th>Nome</th><th>Matrícula</th><th>Turma</th><th>Adaptada</th><th>O que acontece</th></tr>
+      </thead>
+      <tbody>
+        <% @import.rows.each do |row| %>
+          <% label, badge = styles[row.action] %>
+          <tr class="<%= 'bg-red-50/40' if row.error? %>">
+            <td class="font-mono text-xs text-stone-400"><%= row.line %></td>
+            <td class="font-semibold text-cocoa-900"><%= row.name.presence || "—" %></td>
+            <td class="font-mono text-xs text-stone-500"><%= row.registration_number || "—" %></td>
+            <td><%= row.classroom_name || @default_classroom&.name || "—" %></td>
+            <td><%= { true => "Sim", false => "Não", nil => "—" }[row.adapted] %></td>
+            <td>
+              <span class="badge <%= badge %>"><%= label %></span>
+              <% if row.error %><span class="ml-1 text-xs text-red-600"><%= row.error %></span><% end %>
+              <% if row.action == :update %><span class="ml-1 text-xs text-stone-500"><%= row.changes.to_sentence %></span><% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

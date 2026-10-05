@@ -1,27 +1,44 @@
 <% content_for :title, "Gabarito · #{@exam.title}" %>
 
-<%= link_to exam_path(@exam), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 hover:text-navy-800" do %>
+<%= link_to exam_path(@exam), class: "mb-4 inline-flex items-center gap-1 text-sm font-medium text-stone-500 hover:text-cocoa-800" do %>
   <%= icon :arrow_left, class: "size-4" %> <%= @exam.title %>
 <% end %>
 
 <%= form_with url: exam_answer_key_path(@exam), method: :patch,
       data: { controller: "answer-key", answer_key_options_value: @exam.options.join,
               action: "keydown@window->answer-key#keydown" } do %>
+  <%= hidden_field_tag :versao, "adaptada" if @adapted %>
 
-  <%= page_header "Gabarito", eyebrow: "Simulado" do %>
+  <%= page_header(@adapted ? "Gabarito adaptado" : "Gabarito", eyebrow: "Simulado") do %>
     <%= button_tag type: "submit", class: "btn btn-primary" do %><%= icon :check %> Salvar gabarito<% end %>
   <% end %>
 
+  <% if @exam.adapted_answer_key? %>
+    <%# Abas: o mesmo simulado tem gabarito normal e adaptado %>
+    <nav class="mb-6 inline-flex rounded-xl bg-stone-100 p-1 text-sm font-semibold">
+      <% [ [ false, "Gabarito normal", nil ], [ true, "Gabarito adaptado", "adaptada" ] ].each do |adapted, label, param| %>
+        <%= link_to edit_exam_answer_key_path(@exam, versao: param),
+              class: "flex items-center gap-2 rounded-lg px-4 py-2 transition #{@adapted == adapted ? 'bg-white text-cocoa-900 shadow-sm' : 'text-stone-500 hover:text-cocoa-800'}" do %>
+          <%= label %>
+          <span class="badge <%= @exam.answer_key_progress(adapted: adapted) == 100 ? 'badge-caramel' : 'badge-sand' %>"><%= @exam.answer_key_progress(adapted: adapted) %>%</span>
+        <% end %>
+      <% end %>
+    </nav>
+    <% if @adapted %>
+      <p class="-mt-3 mb-6 text-sm text-stone-500">Usado para corrigir os alunos marcados como <strong>prova adaptada</strong>. Mesmas questões e mesmo cartão.</p>
+    <% end %>
+  <% end %>
+
   <%# ---------- Barra de progresso fixa ---------- %>
-  <div class="sticky top-16 z-10 -mx-4 mb-6 border-b border-slate-200/70 bg-slate-50/80 px-4 py-3 backdrop-blur-xl sm:-mx-8 sm:px-8">
+  <div class="sticky top-16 z-10 -mx-4 mb-6 border-b border-stone-200/70 bg-sand-50/80 px-4 py-3 backdrop-blur-xl sm:-mx-8 sm:px-8">
     <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
       <div class="flex min-w-48 flex-1 items-center gap-3">
-        <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
-          <div data-answer-key-target="progressBar" class="h-full rounded-full bg-gradient-to-r from-green-400 to-green-600 transition-all duration-300" style="width: 0%"></div>
+        <div class="h-2 flex-1 overflow-hidden rounded-full bg-stone-200">
+          <div data-answer-key-target="progressBar" class="h-full rounded-full bg-gradient-to-r from-caramel-400 to-caramel-600 transition-all duration-300" style="width: 0%"></div>
         </div>
-        <span class="text-sm font-bold text-navy-900 tabular-nums"><span data-answer-key-target="progressCount">0</span>/<span data-answer-key-target="progressTotal">0</span></span>
+        <span class="text-sm font-bold text-cocoa-900 tabular-nums"><span data-answer-key-target="progressCount">0</span>/<span data-answer-key-target="progressTotal">0</span></span>
       </div>
-      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500">
         <span class="flex items-center gap-1"><%= icon :keyboard, class: "size-4" %> Digite</span>
         <span class="flex items-center gap-1"><% @exam.options.each do |o| %><kbd class="kbd"><%= o %></kbd><% end %> marca e avança</span>
         <span class="flex items-center gap-1"><kbd class="kbd">←</kbd><kbd class="kbd">→</kbd> navega</span>
@@ -36,21 +53,22 @@
     <% @questions_by_subject.each do |exam_subject, questions| %>
       <section class="card p-5 sm:p-6">
         <div class="mb-4 flex flex-wrap items-center gap-3">
-          <span class="size-3 rounded-full" style="background: <%= subject_color(exam_subject.subject) %>"></span>
-          <h2 class="text-lg font-bold text-navy-900"><%= exam_subject.subject.name %></h2>
+          <span class="size-3 rounded-full" style="background: <%= subject_color(exam_subject) %>"></span>
+          <h2 class="text-lg font-bold text-cocoa-900"><%= subject_label(exam_subject) %></h2>
           <span class="badge badge-slate">Questões <%= questions.first.number %>–<%= questions.last.number %></span>
-          <span class="badge badge-navy"><%= points(exam_subject.points_per_question) %> pt cada</span>
-          <% if exam_subject.foreign_language? %><span class="badge badge-green">Inglês e Espanhol</span><% end %>
+          <span class="badge badge-cocoa"><%= points(exam_subject.points_per_question) %> pt cada</span>
+          <% if exam_subject.foreign_language? %><span class="badge badge-caramel">2 gabaritos</span><% end %>
         </div>
 
         <% if exam_subject.foreign_language? %>
           <div class="grid gap-6 lg:grid-cols-2">
-            <% { correct_option: "Inglês", correct_option_es: "Espanhol" }.each do |field, label| %>
-              <div class="rounded-2xl bg-slate-50/70 p-3 ring-1 ring-slate-100">
-                <p class="mb-2 px-3 text-sm font-bold text-navy-900"><%= label %></p>
+            <% question_fields = ExamQuestion::KEY_FIELDS %>
+            <% { "ingles" => "Inglês", "espanhol" => "Espanhol" }.each do |language, label| %>
+              <div class="rounded-2xl bg-stone-50/70 p-3 ring-1 ring-stone-100">
+                <p class="mb-2 px-3 text-sm font-bold text-cocoa-900"><%= label %></p>
                 <div class="grid gap-1">
                   <% questions.each do |question| %>
-                    <%= render "question", question: question, field: field %>
+                    <%= render "question", question: question, fields: question_fields[[ @adapted, language ]] %>
                   <% end %>
                 </div>
               </div>
@@ -59,7 +77,7 @@
         <% else %>
           <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
             <% questions.each do |question| %>
-              <%= render "question", question: question, field: :correct_option %>
+              <%= render "question", question: question, fields: ExamQuestion::KEY_FIELDS[[ @adapted, "ingles" ]] %>
             <% end %>
           </div>
         <% end %>

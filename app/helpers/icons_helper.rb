@@ -36,13 +36,16 @@ module IconsHelper
       class: binding.local_variable_get(:class), "aria-hidden": true, **options)
   end
 
-  # Símbolo do infinito em azul e verde, como no logo do Colégio Metaverso
+  # Marca do sistema: uma bolinha de cartão-resposta preenchida com ✓ entre duas vazias.
+  # As vazias usam a cor do texto (funciona no menu escuro e no cabeçalho claro).
   def brand_mark(class: "size-9")
-    tag.svg(xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none", "stroke-width": 2.6,
-      "stroke-linecap": "round", class: binding.local_variable_get(:class), "aria-hidden": true) do
+    tag.svg(xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "none",
+      class: binding.local_variable_get(:class), "aria-hidden": true) do
       safe_join([
-        tag.path(d: "M12 12c-1.5-2-3.2-4-5-4-2.2 0-4 1.8-4 4s1.8 4 4 4c1.8 0 3.5-2 5-4", stroke: "#8ba0d3"),
-        tag.path(d: "M12 12c1.5 2 3.2 4 5 4 2.2 0 4-1.8 4-4s-1.8-4-4-4c-1.8 0-3.5 2-5 4", stroke: "#31b978")
+        tag.circle(cx: 4.2, cy: 12, r: 2.9, stroke: "currentColor", "stroke-width": 1.6, opacity: 0.55),
+        tag.circle(cx: 19.8, cy: 12, r: 2.9, stroke: "currentColor", "stroke-width": 1.6, opacity: 0.55),
+        tag.circle(cx: 12, cy: 12, r: 6.2, fill: "#c98f4d"),
+        tag.path(d: "M9.2 12.2l1.9 1.9 3.8-4", stroke: "#fff", "stroke-width": 1.9, "stroke-linecap": "round", "stroke-linejoin": "round")
       ])
     end
   end

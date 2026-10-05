@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_121411) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_001452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -84,6 +84,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_121411) do
     t.datetime "updated_at", null: false
     t.string "correct_option_es", limit: 1
     t.boolean "annulled_es", default: false, null: false
+    t.string "correct_option_adapted", limit: 1
+    t.string "correct_option_es_adapted", limit: 1
+    t.boolean "annulled_adapted", default: false, null: false
+    t.boolean "annulled_es_adapted", default: false, null: false
     t.index ["exam_id", "number"], name: "index_exam_questions_on_exam_id_and_number", unique: true
     t.index ["exam_id"], name: "index_exam_questions_on_exam_id"
     t.index ["exam_subject_id"], name: "index_exam_questions_on_exam_subject_id"
@@ -107,6 +111,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_121411) do
     t.integer "options_count", default: 5, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "adapted_answer_key", default: false, null: false
   end
 
   create_table "sheet_answers", force: :cascade do |t|
@@ -129,6 +134,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_121411) do
     t.bigint "classroom_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "adapted", default: false, null: false
     t.index ["classroom_id"], name: "index_students_on_classroom_id"
     t.index ["registration_number"], name: "index_students_on_registration_number", unique: true
   end

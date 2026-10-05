@@ -84,9 +84,9 @@ export default class extends Controller {
       .map((p) => `
         <li class="flex items-center gap-2">
           <span class="size-2 rounded-full" style="background:${p.color}"></span>
-          <span class="flex-1 truncate text-navy-100">${this.escape(p.name)}</span>
+          <span class="flex-1 truncate text-cocoa-100">${this.escape(p.name)}</span>
           <span class="font-semibold tabular-nums">${this.format(p.value)}</span>
-          <span class="w-10 text-right text-xs text-navy-300 tabular-nums">${Math.round((p.value / total) * 100)}%</span>
+          <span class="w-10 text-right text-xs text-cocoa-300 tabular-nums">${Math.round((p.value / total) * 100)}%</span>
         </li>`)
       .join("")
   }

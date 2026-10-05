@@ -7,23 +7,23 @@
      ].select { |_, records, _| records.any? } %>
 
   <% if groups.empty? %>
-    <p class="px-3 py-8 text-center text-sm text-slate-500">Nada encontrado para “<%= params[:q] %>”.</p>
+    <p class="px-3 py-8 text-center text-sm text-stone-500">Nada encontrado para “<%= params[:q] %>”.</p>
   <% end %>
 
   <% groups.each do |label, records, row| %>
-    <p class="px-3 pt-3 pb-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase"><%= label %></p>
+    <p class="px-3 pt-3 pb-1 text-[11px] font-bold tracking-wider text-stone-400 uppercase"><%= label %></p>
     <% records.each do |record| %>
       <% title, detail, path, icon_name = row.call(record) %>
       <%= link_to path, data: { command_palette_target: "item", turbo_frame: "_top" },
-            class: "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm aria-selected:bg-navy-50 aria-selected:text-navy-900" do %>
+            class: "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm aria-selected:bg-cocoa-50 aria-selected:text-cocoa-900" do %>
         <% if record.is_a?(Student) %>
           <%= avatar(title, size: "size-8 text-[11px]") %>
         <% else %>
-          <span class="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 group-aria-selected:bg-navy-800 group-aria-selected:text-white"><%= icon icon_name, class: "size-4" %></span>
+          <span class="flex size-8 items-center justify-center rounded-lg bg-stone-100 text-stone-500 group-aria-selected:bg-cocoa-800 group-aria-selected:text-white"><%= icon icon_name, class: "size-4" %></span>
         <% end %>
         <span class="font-medium"><%= title %></span>
-        <% if detail %><span class="text-xs text-slate-400"><%= detail %></span><% end %>
-        <%= icon :corner_down_left, class: "ml-auto size-4 text-slate-400 opacity-0 group-aria-selected:opacity-100" %>
+        <% if detail %><span class="text-xs text-stone-400"><%= detail %></span><% end %>
+        <%= icon :corner_down_left, class: "ml-auto size-4 text-stone-400 opacity-0 group-aria-selected:opacity-100" %>
       <% end %>
     <% end %>
   <% end %>

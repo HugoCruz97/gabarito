@@ -16,6 +16,15 @@
             { include_blank: "Selecione…" }, class: "input" %>
     </div>
   </div>
+  <label class="flex cursor-pointer items-start gap-3 rounded-xl bg-sand-50 p-4 ring-1 ring-sand-200 select-none">
+    <%= f.check_box :adapted, class: "peer sr-only" %>
+    <span class="relative mt-0.5 h-5 w-9 shrink-0 rounded-full bg-stone-200 transition peer-checked:bg-caramel-500
+                 after:absolute after:top-0.5 after:left-0.5 after:size-4 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-4"></span>
+    <span>
+      <span class="block text-sm font-semibold text-cocoa-900">Faz prova adaptada</span>
+      <span class="block text-xs text-stone-500">Nos simulados que têm gabarito adaptado, este aluno é corrigido por ele.</span>
+    </span>
+  </label>
   <div class="flex flex-wrap gap-2 pt-2">
     <%= f.button type: "submit", class: "btn btn-primary" do %><%= icon :check %> Salvar<% end %>
     <% if student.new_record? %>

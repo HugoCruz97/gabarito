@@ -1,10 +1,10 @@
 <%# Turbo Frame: "Editar" troca só esta linha pelo formulário %>
 <%= turbo_frame_tag subject do %>
-  <div class="group flex items-center gap-3 px-5 py-3.5 transition hover:bg-slate-50/70">
+  <div class="group flex items-center gap-3 px-5 py-3.5 transition hover:bg-stone-50/70">
     <span class="flex size-9 items-center justify-center rounded-xl text-white shadow-sm" style="background: <%= subject_color(subject) %>">
       <span class="text-sm font-bold"><%= subject.name.first %></span>
     </span>
-    <span class="flex-1 font-semibold text-navy-900"><%= subject.name %></span>
+    <span class="flex-1 font-semibold text-cocoa-900"><%= subject.name %></span>
     <div class="flex gap-1 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
       <%= link_to edit_subject_path(subject), class: "btn btn-ghost btn-icon btn-sm", title: "Editar" do %><%= icon :pencil, class: "size-4" %><% end %>
       <%= button_to subject_path(subject), method: :delete, class: "btn btn-ghost btn-icon btn-sm hover:!text-red-600", title: "Excluir",

@@ -3,8 +3,8 @@
     <%= render "shared/errors", record: exam %>
 
     <section class="card space-y-5 p-6">
-      <h2 class="flex items-center gap-2 font-bold text-navy-900">
-        <span class="flex size-7 items-center justify-center rounded-lg bg-navy-800 text-xs text-white">1</span> Informações
+      <h2 class="flex items-center gap-2 font-bold text-cocoa-900">
+        <span class="flex size-7 items-center justify-center rounded-lg bg-cocoa-800 text-xs text-white">1</span> Informações
       </h2>
       <div class="grid gap-5 sm:grid-cols-3">
         <div class="sm:col-span-2">
@@ -23,40 +23,50 @@
           <%= f.collection_check_boxes :classroom_ids, @classrooms, :id, :display_name do |b| %>
             <label class="cursor-pointer">
               <%= b.check_box(class: "peer sr-only") %>
-              <span class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 transition select-none hover:ring-slate-300
-                           peer-checked:bg-navy-800 peer-checked:text-white peer-checked:ring-navy-800 peer-focus-visible:ring-2 peer-focus-visible:ring-green-500">
+              <span class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-stone-600 ring-1 ring-stone-200 transition select-none hover:ring-stone-300
+                           peer-checked:bg-cocoa-800 peer-checked:text-white peer-checked:ring-cocoa-800 peer-focus-visible:ring-2 peer-focus-visible:ring-caramel-500">
                 <%= b.text %>
               </span>
             </label>
           <% end %>
           <% if @classrooms.empty? %>
-            <p class="text-sm text-slate-500">Nenhuma turma ainda. <%= link_to "Cadastrar turma", new_classroom_path, class: "font-semibold text-green-600 hover:underline" %></p>
+            <p class="text-sm text-stone-500">Nenhuma turma ainda. <%= link_to "Cadastrar turma", new_classroom_path, class: "font-semibold text-caramel-600 hover:underline" %></p>
           <% end %>
         </div>
       </div>
 
       <div>
         <span class="label">Alternativas por questão</span>
-        <div class="inline-flex rounded-xl bg-slate-100 p-1">
+        <div class="inline-flex rounded-xl bg-stone-100 p-1">
           <% [ [ 4, "A – D" ], [ 5, "A – E" ] ].each do |value, label| %>
             <label class="cursor-pointer">
               <%= f.radio_button :options_count, value, class: "peer sr-only" %>
-              <span class="block rounded-lg px-4 py-1.5 text-sm font-semibold text-slate-500 transition peer-checked:bg-white peer-checked:text-navy-900 peer-checked:shadow-sm"><%= label %></span>
+              <span class="block rounded-lg px-4 py-1.5 text-sm font-semibold text-stone-500 transition peer-checked:bg-white peer-checked:text-cocoa-900 peer-checked:shadow-sm"><%= label %></span>
             </label>
           <% end %>
         </div>
       </div>
+
+      <label class="flex cursor-pointer items-start gap-3 rounded-xl bg-sand-50 p-4 ring-1 ring-sand-200 select-none">
+        <%= f.check_box :adapted_answer_key, class: "peer sr-only" %>
+        <span class="relative mt-0.5 h-5 w-9 shrink-0 rounded-full bg-stone-200 transition peer-checked:bg-caramel-500
+                     after:absolute after:top-0.5 after:left-0.5 after:size-4 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-4"></span>
+        <span>
+          <span class="block text-sm font-semibold text-cocoa-900">Tem prova adaptada</span>
+          <span class="block text-xs text-stone-500">Mesmas questões e mesmo cartão, com um segundo gabarito. Os alunos marcados como "prova adaptada" são corrigidos por ele.</span>
+        </span>
+      </label>
     </section>
 
     <section class="card p-6">
       <div class="mb-5 flex items-center justify-between">
-        <h2 class="flex items-center gap-2 font-bold text-navy-900">
-          <span class="flex size-7 items-center justify-center rounded-lg bg-navy-800 text-xs text-white">2</span> Matérias
+        <h2 class="flex items-center gap-2 font-bold text-cocoa-900">
+          <span class="flex size-7 items-center justify-center rounded-lg bg-cocoa-800 text-xs text-white">2</span> Matérias
         </h2>
-        <%= link_to subjects_path, class: "text-sm font-semibold text-green-600 hover:underline", target: "_blank" do %>Gerenciar matérias ↗<% end %>
+        <%= link_to subjects_path, class: "text-sm font-semibold text-caramel-600 hover:underline", target: "_blank" do %>Gerenciar matérias ↗<% end %>
       </div>
 
-      <div class="mb-2 hidden grid-cols-12 gap-3 px-1 text-[11px] font-bold tracking-wider text-slate-400 uppercase md:grid">
+      <div class="mb-2 hidden grid-cols-12 gap-3 px-1 text-[11px] font-bold tracking-wider text-stone-400 uppercase md:grid">
         <span class="col-span-5 pl-8">Matéria</span>
         <span class="col-span-2">Questões</span>
         <span class="col-span-2">Valor cada <span class="font-normal normal-case">(10 ÷ qtd.)</span></span>
@@ -77,7 +87,7 @@
       </template>
 
       <button type="button" data-action="exam-form#add"
-              class="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 py-3 text-sm font-semibold text-slate-500 transition hover:border-green-400 hover:bg-green-50/50 hover:text-green-700">
+              class="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-stone-200 py-3 text-sm font-semibold text-stone-500 transition hover:border-caramel-400 hover:bg-caramel-50/50 hover:text-caramel-700">
         <%= icon :plus, class: "size-4" %> Adicionar matéria
       </button>
       <p class="hint mt-3 flex items-center gap-1.5"><%= icon :grip, class: "size-3.5" %> Arraste pelas bolinhas para mudar a ordem das matérias no cartão.</p>
@@ -86,17 +96,17 @@
 
   <%# ---------- Resumo fixo ---------- %>
   <aside class="lg:sticky lg:top-24 lg:self-start">
-    <div class="relative overflow-hidden rounded-2xl bg-navy-900 p-6 text-white shadow-xl shadow-navy-900/20">
-      <div class="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-green-500/30 blur-3xl"></div>
-      <p class="relative text-xs font-bold tracking-[0.18em] text-green-300 uppercase">Resumo</p>
+    <div class="relative overflow-hidden rounded-2xl bg-cocoa-900 p-6 text-white shadow-xl shadow-cocoa-900/20">
+      <div class="pointer-events-none absolute -top-16 -right-16 size-48 rounded-full bg-caramel-500/30 blur-3xl"></div>
+      <p class="relative text-xs font-bold tracking-[0.18em] text-caramel-300 uppercase">Resumo</p>
       <div class="relative mt-4 grid grid-cols-2 gap-4">
         <div>
           <p class="text-4xl font-extrabold tracking-tight tabular-nums" data-exam-form-target="totalQuestions">0</p>
-          <p class="text-sm text-navy-200">questões</p>
+          <p class="text-sm text-cocoa-200">questões</p>
         </div>
         <div>
           <p class="text-4xl font-extrabold tracking-tight tabular-nums" data-exam-form-target="totalPoints">0</p>
-          <p class="text-sm text-navy-200">pontos</p>
+          <p class="text-sm text-cocoa-200">pontos</p>
         </div>
       </div>
       <div class="relative mt-5 flex h-2 gap-0.5 overflow-hidden rounded-full bg-white/10" data-exam-form-target="bar"></div>
@@ -106,7 +116,7 @@
         <%= f.button type: "submit", class: "btn btn-accent w-full py-3" do %>
           <%= icon :check %> <%= exam.new_record? ? "Criar e preencher gabarito" : "Salvar alterações" %>
         <% end %>
-        <%= link_to "Cancelar", exam.persisted? ? exam : exams_path, class: "btn w-full text-navy-100 hover:bg-white/10" %>
+        <%= link_to "Cancelar", exam.persisted? ? exam : exams_path, class: "btn w-full text-cocoa-100 hover:bg-white/10" %>
       </div>
     </div>
   </aside>

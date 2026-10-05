@@ -10,11 +10,14 @@
 <section id="cartoes" class="mt-8 scroll-mt-24">
   <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
     <div>
-      <h2 class="text-xl font-extrabold tracking-tight text-navy-900">Cartões e notas</h2>
-      <p class="text-sm text-slate-500"><%= pluralize(sheets.size, "cartão enviado", plural: "cartões enviados") %></p>
+      <h2 class="text-xl font-extrabold tracking-tight text-cocoa-900">Cartões e notas</h2>
+      <p class="text-sm text-stone-500"><%= pluralize(sheets.size, "cartão enviado", plural: "cartões enviados") %></p>
     </div>
     <% if sheets.any? %>
-      <%= link_to new_exam_answer_sheet_path(exam), class: "btn btn-primary" do %><%= icon :plus %> Enviar mais cartões<% end %>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to exam_report_path(exam), class: "btn btn-secondary" do %><%= icon :target %> Relatório de notas<% end %>
+        <%= link_to new_exam_answer_sheet_path(exam), class: "btn btn-primary" do %><%= icon :plus %> Enviar mais cartões<% end %>
+      </div>
     <% end %>
   </div>
 
@@ -28,16 +31,16 @@
     <div class="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
       <% average = graded.any? ? graded.sum { |s| s.score.to_d } / graded.size : nil %>
       <% [
-           [ "Corrigidos", graded.size - to_review.size, "text-green-600", :check_circle ],
-           [ "Para revisar", to_review.size, "text-gold-600", :alert ],
-           [ "Em leitura", reading, "text-navy-600", :scan ],
-           [ "Média geral", average ? points(average.round(2)) : "—", "text-navy-900", :target ]
+           [ "Corrigidos", graded.size - to_review.size, "text-caramel-600", :check_circle ],
+           [ "Para revisar", to_review.size, "text-sand-600", :alert ],
+           [ "Em leitura", reading, "text-cocoa-600", :scan ],
+           [ "Média geral", average ? points(average.round(2)) : "—", "text-cocoa-900", :target ]
          ].each do |label, value, color, icon_name| %>
         <div class="card flex items-center gap-3 p-4">
           <span class="<%= color %>"><%= icon icon_name %></span>
           <div>
             <p class="text-xl font-extrabold tabular-nums <%= color %>"><%= value %></p>
-            <p class="text-xs text-slate-500"><%= label %></p>
+            <p class="text-xs text-stone-500"><%= label %></p>
           </div>
         </div>
       <% end %>
@@ -58,8 +61,8 @@
               <th>Aluno</th>
               <th>Situação</th>
               <% subjects.each do |es| %>
-                <th class="!text-right whitespace-nowrap" title="<%= es.subject.name %>">
-                  <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full" style="background: <%= subject_color(es.subject) %>"></span><%= es.subject.name.truncate(12) %></span>
+                <th class="!text-right whitespace-nowrap" title="<%= subject_label(es) %>">
+                  <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full" style="background: <%= subject_color(es) %>"></span><%= subject_label(es).truncate(17) %></span>
                 </th>
               <% end %>
               <th class="!text-right">Total</th>
@@ -72,17 +75,25 @@
               <tr class="group">
                 <td>
                   <% if sheet.student %>
-                    <span class="flex items-center gap-3 font-semibold text-navy-900"><%= avatar(sheet.student.name, size: "size-8 text-[11px]") %> <%= sheet.student.name %></span>
+                    <span class="flex items-center gap-3 font-semibold text-cocoa-900"><%= avatar(sheet.student.name, size: "size-8 text-[11px]") %> <%= sheet.student.name %></span>
                   <% else %>
-                    <span class="flex items-center gap-3 text-slate-400 italic"><span class="flex size-8 items-center justify-center rounded-full bg-slate-100"><%= icon :students, class: "size-4" %></span> Aluno não informado</span>
+                    <span class="flex items-center gap-3 text-stone-400 italic"><span class="flex size-8 items-center justify-center rounded-full bg-stone-100"><%= icon :students, class: "size-4" %></span> Aluno não informado</span>
                   <% end %>
                 </td>
-                <td><%= render "answer_sheets/status", sheet: sheet %></td>
+                <td>
+                  <%= render "answer_sheets/status", sheet: sheet %>
+                  <% if sheet.adapted? %><span class="badge badge-sand mt-1">Adaptada</span><% end %>
+                </td>
                 <% subjects.each do |es| %>
-                  <td class="text-right tabular-nums text-slate-600"><%= by_subject.key?(es) ? points(by_subject[es].round(2)) : "—" %></td>
+                  <td class="text-right tabular-nums text-stone-600">
+                    <%= by_subject.key?(es) ? points(by_subject[es].round(2)) : "—" %>
+                    <% if es.foreign_language? && sheet.graded? %>
+                      <span class="ml-1 rounded bg-stone-100 px-1 text-[10px] font-bold text-stone-500" title="<%= subject_label(es, sheet.language) %>"><%= { "ingles" => "EN", "espanhol" => "ES" }.fetch(sheet.language, "?") %></span>
+                    <% end %>
+                  </td>
                 <% end %>
                 <td class="text-right">
-                  <span class="text-base font-extrabold tabular-nums <%= sheet.graded? ? 'text-navy-900' : 'text-slate-300' %>"><%= sheet.graded? ? points(sheet.score) : "—" %></span>
+                  <span class="text-base font-extrabold tabular-nums <%= sheet.graded? ? 'text-cocoa-900' : 'text-stone-300' %>"><%= sheet.graded? ? points(sheet.score) : "—" %></span>
                 </td>
                 <td class="text-right whitespace-nowrap">
                   <% if sheet.graded? %>
@@ -93,7 +104,7 @@
                     <%= button_to reprocess_exam_answer_sheet_path(exam, sheet), class: "btn btn-secondary btn-sm", form_class: "inline" do %>Tentar de novo<% end %>
                   <% end %>
                   <%= button_to exam_answer_sheet_path(exam, sheet), method: :delete, form_class: "inline",
-                        class: "btn btn-ghost btn-icon btn-sm text-slate-400 opacity-0 transition group-hover:opacity-100 focus:opacity-100 hover:!text-red-600",
+                        class: "btn btn-ghost btn-icon btn-sm text-stone-400 opacity-0 transition group-hover:opacity-100 focus:opacity-100 hover:!text-red-600",
                         title: "Excluir cartão", form: { data: { turbo_confirm: "O cartão #{sheet.student ? "de #{sheet.student.name}" : 'sem aluno'} será excluído." } } do %>
                     <%= icon :trash, class: "size-4" %>
                   <% end %>

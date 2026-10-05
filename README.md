@@ -60,16 +60,16 @@ docker compose down                            # parar tudo
 
 ## Identidade visual
 
-Cores tiradas do site do [Colégio Metaverso](https://colegiometaverso.com.br/), definidas como tokens do Tailwind em `app/assets/tailwind/application.css`:
+Paleta de cinza, bege e marrom, definida como tokens do Tailwind em `app/assets/tailwind/application.css`:
 
 | Token | Cor | Uso |
 |---|---|---|
-| `navy-800` | `#1C2D61` | Primária (menu, botões, títulos) |
-| `green-700` | `#006C21` | Secundária (ações, sucesso) |
-| `gold-400` | `#F8B81F` | Destaques |
-| `green-400` | `#31B978` | Degradê verde → azul do site |
+| `cocoa-900` / `cocoa-800` | `#2F241E` / `#43322A` | Primária (menu, botões, títulos) |
+| `caramel-500` | `#B57636` | Destaques e ações |
+| `sand-400` / `sand-50` | `#CCB07F` / `#FBF9F4` | Detalhes, avisos e fundo creme |
+| `stone-*` | cinza quente (padrão do Tailwind) | Textos e neutros |
 
-Fonte: Plus Jakarta Sans. Só tem tema claro.
+Marca: uma bolinha de cartão-resposta preenchida com ✓ entre duas vazias (`brand_mark` em `app/helpers/icons_helper.rb`, `public/icon.svg`). Fonte: Plus Jakarta Sans. Só tem tema claro.
 
 ## Recursos de interface
 
@@ -94,10 +94,21 @@ Fonte: Plus Jakarta Sans. Só tem tema claro.
 5. Na revisão, a professora confere a imagem, ajusta marcações, aluno ou língua e confirma. O sistema já abre o próximo cartão a revisar.
 6. Mudou o gabarito ou o simulado? As notas já lançadas são recalculadas.
 
-O modelo de cartão fica em `config/initializers/omr.rb` e o PDF em `omr/templates/` (fora do Git).
+O leitor descobre a grade do cartão na própria foto, usando o nº de questões e de alternativas do simulado. Serve para qualquer variação do cartão da escola, sem cadastrar modelo. Um modelo em PDF (`omr/templates/`, fora do Git) fica só como reserva.
+
+## Prova adaptada
+
+O aluno marcado como **"Faz prova adaptada"** é corrigido pelo **gabarito adaptado** do simulado, quando o simulado tem a opção **"Tem prova adaptada"** ligada. A prova adaptada usa as mesmas questões e o mesmo cartão; só o gabarito muda, inclusive Inglês/Espanhol e anulações, todos independentes. Os gabaritos ficam em `ExamQuestion::KEY_FIELDS`. Mudar a marcação do aluno ou o gabarito recalcula as notas já lançadas.
+
+## Importação de alunos
+
+Alunos → **Importar planilha** (.xlsx). Colunas reconhecidas pelo título: Nome (obrigatória), Matrícula, Turma e Adaptada. Antes de gravar aparece uma prévia (novo, atualizar, sem mudança, erro). Turmas novas são criadas na hora, e alunos já cadastrados são reconhecidos pela matrícula, ou pelo nome dentro da turma. Há uma planilha modelo para baixar. Código: `StudentImport` e `StudentImportsController`.
+
+## Relatório de notas
+
+Simulado → **Relatório de notas**: ranking (empates dividem a posição), nota por matéria, média, maior e menor nota, média por matéria, filtro por turma, pendências e alunos sem cartão. Exporta para Excel (`.xlsx`); para PDF, use **Imprimir / PDF** (layout de impressão sem menu). Código: `ExamReport` e `ReportsController`.
 
 ## Próximos passos
 
-1. Validar o leitor com fotos reais de cartões preenchidos.
-2. Relatórios por turma e exportação para Excel/PDF.
-3. Envio de PDF escaneado com vários cartões de uma vez.
+1. Envio de PDF escaneado com vários cartões de uma vez.
+2. Boletim individual do aluno, análise das questões e evolução entre simulados.

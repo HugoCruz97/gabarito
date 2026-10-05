@@ -14,13 +14,14 @@
           <% students.each do |student| %>
             <tr class="group">
               <td>
-                <%= link_to student, class: "flex items-center gap-3 font-semibold text-navy-900 hover:text-green-700", data: { turbo_frame: "_top" } do %>
+                <%= link_to student, class: "flex items-center gap-3 font-semibold text-cocoa-900 hover:text-caramel-700", data: { turbo_frame: "_top" } do %>
                   <%= avatar(student.name) %> <%= student.name %>
+                  <% if student.adapted? %><span class="badge badge-sand">Adaptada</span><% end %>
                 <% end %>
               </td>
-              <td class="font-mono text-xs text-slate-500"><%= student.registration_number || "—" %></td>
+              <td class="font-mono text-xs text-stone-500"><%= student.registration_number || "—" %></td>
               <% if show_classroom %>
-                <td><span class="badge badge-navy"><%= student.classroom.name %></span></td>
+                <td><span class="badge badge-cocoa"><%= student.classroom.name %></span></td>
               <% end %>
               <td class="text-right">
                 <%= link_to edit_student_path(student), class: "btn btn-ghost btn-icon btn-sm opacity-0 transition group-hover:opacity-100 focus:opacity-100", title: "Editar", data: { turbo_frame: "_top" } do %>
@@ -34,5 +35,5 @@
     </div>
   </div>
 <% else %>
-  <div class="card px-6 py-12 text-center text-sm text-slate-500">Nenhum aluno encontrado.</div>
+  <div class="card px-6 py-12 text-center text-sm text-stone-500">Nenhum aluno encontrado.</div>
 <% end %>

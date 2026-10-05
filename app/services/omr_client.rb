@@ -12,10 +12,14 @@ class OmrClient
     @uri = URI.join(url, "/read")
   end
 
-  # Retorna o hash do leitor: "questions", "language", "needs_review", "alignment", "overlay_jpeg_base64"
-  def read(io, filename:, template:)
+  # Retorna o hash do leitor: "questions", "language", "needs_review", "alignment", "overlay_jpeg_base64".
+  # questions/options vêm do simulado: o leitor descobre a grade do cartão na foto e
+  # confere se ela tem exatamente essa quantidade de questões.
+  def read(io, filename:, questions:, options:, template: nil)
     request = Net::HTTP::Post.new(@uri)
-    request.set_form([ [ "image", io, { filename: filename } ], [ "template", template ] ], "multipart/form-data")
+    fields = [ [ "image", io, { filename: filename } ], [ "questions", questions.to_s ], [ "options", options.to_s ] ]
+    fields << [ "template", template ] if template
+    request.set_form(fields, "multipart/form-data")
 
     response = Net::HTTP.start(@uri.host, @uri.port, open_timeout: 5, read_timeout: TIMEOUT) { |http| http.request(request) }
     body = JSON.parse(response.body) rescue {}

@@ -2,20 +2,20 @@
 <% greeting = case Time.current.hour when 5..11 then "Bom dia" when 12..17 then "Boa tarde" else "Boa noite" end %>
 
 <%# ---------- Destaque ---------- %>
-<section class="relative mb-8 overflow-hidden rounded-3xl bg-navy-900 px-6 py-10 text-white shadow-2xl shadow-navy-900/20 sm:px-10 animate-slide-up">
-  <div class="pointer-events-none absolute -top-32 -right-16 size-96 rounded-full bg-green-500/30 blur-3xl"></div>
-  <div class="pointer-events-none absolute -bottom-40 left-1/3 size-96 rounded-full bg-navy-400/30 blur-3xl"></div>
+<section class="relative mb-8 overflow-hidden rounded-3xl bg-cocoa-900 px-6 py-10 text-white shadow-2xl shadow-cocoa-900/20 sm:px-10 animate-slide-up">
+  <div class="pointer-events-none absolute -top-32 -right-16 size-96 rounded-full bg-caramel-500/30 blur-3xl"></div>
+  <div class="pointer-events-none absolute -bottom-40 left-1/3 size-96 rounded-full bg-cocoa-400/30 blur-3xl"></div>
   <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_top_right,black,transparent_70%)]"></div>
   <%= brand_mark(class: "pointer-events-none absolute -right-10 -bottom-16 size-72 opacity-[0.15] max-sm:hidden") %>
 
   <div class="relative max-w-2xl">
-    <p class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-green-200 ring-1 ring-white/15 backdrop-blur">
-      <%= icon :sparkles, class: "size-3.5 text-gold-400" %> <%= l(Date.current, format: :long) %>
+    <p class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-caramel-200 ring-1 ring-white/15 backdrop-blur">
+      <%= icon :sparkles, class: "size-3.5 text-sand-400" %> <%= l(Date.current, format: :long) %>
     </p>
     <h1 class="text-3xl font-extrabold tracking-tight sm:text-5xl">
-      <%= greeting %>! <span class="bg-gradient-to-r from-green-300 to-gold-300 bg-clip-text text-transparent">Vamos corrigir?</span>
+      <%= greeting %>! <span class="bg-gradient-to-r from-caramel-300 to-sand-300 bg-clip-text text-transparent">Vamos corrigir?</span>
     </h1>
-    <p class="mt-3 max-w-lg text-navy-100/80">Monte simulados em minutos, escolha as matérias e deixe a correção com a gente.</p>
+    <p class="mt-3 max-w-lg text-cocoa-100/80">Monte simulados em minutos, escolha as matérias e deixe a correção com a gente.</p>
     <div class="mt-7 flex flex-wrap gap-3">
       <%= link_to new_exam_path, class: "btn btn-accent px-5 py-3" do %><%= icon :plus %> Novo simulado<% end %>
       <%= link_to exams_path, class: "btn bg-white/10 px-5 py-3 text-white ring-1 ring-white/20 backdrop-blur hover:bg-white/20" do %>Ver simulados <%= icon :arrow_right %><% end %>
@@ -26,18 +26,18 @@
 <%# ---------- Números ---------- %>
 <section class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
   <% [
-       [ "Simulados", @counts[:exams], :exams, exams_path, "from-navy-700 to-navy-900" ],
-       [ "Turmas", @counts[:classrooms], :classrooms, classrooms_path, "from-green-500 to-green-700" ],
-       [ "Alunos", @counts[:students], :students, students_path, "from-gold-400 to-gold-600" ],
-       [ "Matérias", @counts[:subjects], :subjects, subjects_path, "from-navy-400 to-navy-600" ]
+       [ "Simulados", @counts[:exams], :exams, exams_path, "from-cocoa-700 to-cocoa-900" ],
+       [ "Turmas", @counts[:classrooms], :classrooms, classrooms_path, "from-caramel-500 to-caramel-700" ],
+       [ "Alunos", @counts[:students], :students, students_path, "from-sand-400 to-sand-600" ],
+       [ "Matérias", @counts[:subjects], :subjects, subjects_path, "from-cocoa-400 to-cocoa-600" ]
      ].each_with_index do |(label, count, icon_name, path, gradient), i| %>
     <%= link_to path, class: "card card-hover group p-5 animate-slide-up", style: "animation-delay: #{i * 60}ms" do %>
       <div class="flex items-center justify-between">
         <span class="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br <%= gradient %> text-white shadow-lg"><%= icon icon_name %></span>
-        <%= icon :arrow_right, class: "size-4 -translate-x-1 text-slate-300 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100" %>
+        <%= icon :arrow_right, class: "size-4 -translate-x-1 text-stone-300 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100" %>
       </div>
-      <p class="mt-4 text-3xl font-extrabold tracking-tight text-navy-900 tabular-nums"><%= count %></p>
-      <p class="text-sm font-medium text-slate-500"><%= label %></p>
+      <p class="mt-4 text-3xl font-extrabold tracking-tight text-cocoa-900 tabular-nums"><%= count %></p>
+      <p class="text-sm font-medium text-stone-500"><%= label %></p>
     <% end %>
   <% end %>
 </section>
@@ -45,8 +45,8 @@
 <%# ---------- Simulados recentes ---------- %>
 <section>
   <div class="mb-4 flex items-center justify-between">
-    <h2 class="text-lg font-bold text-navy-900">Simulados recentes</h2>
-    <%= link_to exams_path, class: "text-sm font-semibold text-green-600 hover:text-green-700" do %>Ver todos →<% end %>
+    <h2 class="text-lg font-bold text-cocoa-900">Simulados recentes</h2>
+    <%= link_to exams_path, class: "text-sm font-semibold text-caramel-600 hover:text-caramel-700" do %>Ver todos →<% end %>
   </div>
   <% if @recent_exams.any? %>
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -59,7 +59,7 @@
   <% end %>
 </section>
 
-<p class="mt-8 flex items-center justify-center gap-2 text-sm text-slate-500">
+<p class="mt-8 flex items-center justify-center gap-2 text-sm text-stone-500">
   <%= icon :keyboard, class: "size-4" %>
   Dica: aperte <kbd class="kbd">Ctrl</kbd> <kbd class="kbd">K</kbd> em qualquer tela para buscar alunos, turmas e simulados.
 </p>
