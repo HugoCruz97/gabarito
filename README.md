@@ -1,4 +1,4 @@
-# Metaverso Simulados
+# Corrige
 
 Plataforma para criar simulados escolares, cadastrar alunos e corrigir cartões-resposta automaticamente por foto.
 

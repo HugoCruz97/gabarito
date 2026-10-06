@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <title><%= content_for?(:title) ? "#{yield(:title)} · Simulados" : "Simulados" %></title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} · Corrige" : "Corrige" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Simulados">
+    <meta name="application-name" content="Corrige">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#2f241e">
     <meta name="view-transition" content="same-origin">
@@ -40,8 +40,8 @@
           <%= brand_mark(class: "size-8") %>
         </span>
         <div class="leading-tight">
-          <p class="text-[11px] font-semibold tracking-[0.2em] text-caramel-300 uppercase">Correção inteligente</p>
-          <p class="text-xl font-extrabold tracking-tight">Simulados</p>
+          <p class="text-[11px] font-semibold tracking-[0.2em] text-caramel-300 uppercase">Simulados escolares</p>
+          <p class="text-xl font-extrabold tracking-tight">Corrige</p>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
           <button type="button" data-action="sidebar#open" class="btn btn-ghost btn-icon lg:hidden" aria-label="Abrir menu">
             <%= icon :menu %>
           </button>
-          <span class="flex items-center gap-2 font-bold lg:hidden"><%= brand_mark(class: "size-7") %> Simulados</span>
+          <span class="flex items-center gap-2 font-bold lg:hidden"><%= brand_mark(class: "size-7") %> Corrige</span>
 
           <button type="button" data-action="command-palette#open"
                   class="ml-auto flex w-full max-w-sm cursor-pointer items-center gap-3 rounded-xl bg-white px-3.5 py-2 text-sm text-stone-400 ring-1 ring-stone-200 transition hover:ring-stone-300 max-sm:w-auto max-sm:ring-0 max-sm:bg-transparent">
