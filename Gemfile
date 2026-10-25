@@ -69,5 +69,5 @@ end
 
 gem "rails-i18n", "~> 8.1"
 
-gem "roo", "~> 3.0"
+gem "roo", "~> 4.0"
 gem "caxlsx", "~> 4.5"
